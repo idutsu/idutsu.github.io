@@ -18,18 +18,18 @@ game.addAsset("image", "sit", "images/sheet/sit.png");
 game.addAsset("image", "stand", "images/sheet/stand.png");
 game.addAsset("image", "arm", "images/sheet/arm.png");
 game.addAsset("image", "sleep", "images/sheet/sleep.png");
-game.addAsset("image", "email", "images/email.png");
-
+game.addAsset("image", "email", "images/sheet/email.png");
+game.addAsset("image", "address", "images/address.png");
 game.start(rule);
 
 function rule(){
-	const getAsset    = game.getAsset;
-	const addUpdate   = game.addUpdateEvent;
-	const remUpdate   = game.removeUpdateEvent;
-	const addRender   = game.addRenderEvent;
-	const remRender   = game.removeRenderEvent;
-	const addKey      = game.addPressedKey;
-	const remKey      = game.removePressedKey;
+	const getAsset  = game.getAsset;
+	const addUpdate = game.addUpdateEvent;
+	const remUpdate = game.removeUpdateEvent;
+	const addRender = game.addRenderEvent;
+	const remRender = game.removeRenderEvent;
+	const addKey    = game.addPressedKey;
+	const remKey    = game.removePressedKey;
 	
 	const idleImage      = getAsset("image", "idle");
 	const closeFaceImage = getAsset("image", "close");
@@ -42,6 +42,7 @@ function rule(){
 	const foldArmImage   = getAsset("image", "arm");
 	const sleepImage     = getAsset("image", "sleep");
 	const emailImage     = getAsset("image", "email");
+	const addressImage   = getAsset("image", "address");
 
 	const frame2 = createPlayerFrame(2);
 	const frame3 = createPlayerFrame(3);
@@ -54,7 +55,8 @@ function rule(){
 	player.width  = PLAYER_SIZE;
 	player.height = PLAYER_SIZE;
 
-	// main update for game loop	
+	// main update for game loop
+	let unstoppable = false;	
 	let isCloseFace = false;
 	let isFrontFace = false;
 	let isSit       = false;
@@ -112,8 +114,8 @@ function rule(){
 			}	
 		} else {
 			//  idle
-			idleTime += deltaTime;
-			if (idleTime > 3000 ) addUpdate(idleAnimation);
+			if (!unstoppable) idleTime += deltaTime;
+			if (idleTime > 3000) addUpdate(idleAnimation);
 		}
 	};
 
@@ -447,12 +449,42 @@ function rule(){
 	})();
 
 	const emailAnimation = (() => {
-		const email = new Entity("email");
-		email.image = emailImage;
-		email.width = WINDOW_WIDTH;
+		const email  = new Entity("email");
+		email.image  = addressImage;
+		email.width  = WINDOW_WIDTH;
 		email.height = WINDOW_WIDTH / (email.image.width / email.image.height);
+		email.x      = 0;
+		email.y      = (WINDOW_HEIGHT - email.height) / 2;
 
-		const drawEmail = (ctx) =>{
+		let interval = 100;
+		let initialized = false;
+		let time = 0;
+		let showEmailAddressReady = false;
+		let showEmailAddressInitialized = false;
+		let showEmailAddressTime = 0;
+
+		const update = (deltaTime) => {
+			if (!initialized) {
+				unstoppable = true;
+				initialized = true;
+				player.image = emailImage;
+				player.frames = frame3;
+			}
+			if (player.image === emailImage) {
+				time += deltaTime;
+				if (time >= interval) {
+					time -= interval;
+					player.advance(() => {
+						showEmailAddressReady = true;
+					});					
+				}
+				if (showEmailAddressReady) showEmailAddress(deltaTime);
+			} else {
+				reset();
+			}
+		};
+
+		const drawEmail = (ctx) => {
 			const image   = email.image;
 			const dx      = email.x;
 			const dy      = email.y;
@@ -460,26 +492,27 @@ function rule(){
 			const dHeight = email.height;
 			ctx.drawImage(image, dx, dy, dWidth, dHeight);	
 		};
-					
-		let initialized = false;
-		let time = 0;
 
-		const update = (deltaTime) => {
-			if (!initialized) {
-				initialized = true;
-				addRender(drawEmail);
+		const showEmailAddress = (deltaTime) => {
+			showEmailAddressTime += deltaTime;
+			if (showEmailAddressTime > 1000) {
+				if (!showEmailAddressInitialized) {
+					showEmailAddressInitialized = true;
+					addRender(drawEmail);
+				} 
 			}
-			time += deltaTime;
-			email.x = 0;
-			email.y = (WINDOW_HEIGHT - email.height) / 2;
+		}
 
-			if (time >= 3000) {
-				remRender(drawEmail);
-				remUpdate(update);
-				initialized = false;
-				time = 0;
-			}
-		};
+		const reset = () => {
+			unstoppable = false;
+			remRender(drawEmail);
+			remUpdate(update);
+			initialized = false;
+			time = 0;
+			showEmailAddressReady = false;
+			showEmailAddressInitialized = false;
+			showEmailAddressTime = 0;
+		}
 
 		return update;
 	})();

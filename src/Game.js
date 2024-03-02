@@ -23,7 +23,7 @@ export const Game = (canvasId, width, height) => {
 	const loop = (timestamp) => {
 		if (lastTime === 0) lastTime = timestamp;
 		const deltaTime = timestamp - lastTime;
-		//console.log(deltaTime);
+		// console.log(deltaTime);
 		if (deltaTime > 0) {
 			canvas.clear();
 			updates.forEach((update) => update(deltaTime, pressedKeys));
@@ -212,6 +212,5 @@ export const Game = (canvasId, width, height) => {
 		removePressedKey,
 		addEventListener,
 		removeEventListener,
-		render: canvas,
 	};
 };

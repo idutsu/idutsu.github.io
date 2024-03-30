@@ -474,9 +474,7 @@ function rule(){
 				time += deltaTime;
 				if (time >= interval) {
 					time -= interval;
-					player.advance(() => {
-						showEmailAddressReady = true;
-					});					
+					player.advance(() => showEmailAddressReady = true);					
 				}
 				if (showEmailAddressReady) showEmailAddress(deltaTime);
 			} else {

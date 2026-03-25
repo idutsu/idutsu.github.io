@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ get_url(path="css/style.css") | safe }}">
+    <title>{% block title %}{% endblock %} | {{config.title}}</title>
+    </head>
+<body>
+    <header>
+        {% if current_path == "/" %}
+            <h1><a href="{{ config.base_url }}/">{{ config.title }}</a></h1>
+        {% else %}
+            <div id="title"><a href="{{ config.base_url }}/">{{ config.title }}</a></div>
+        {% endif %}
+        <nav>
+        <ul>
+            <li {% if current_path == "/" %}class="active"{% endif %}><a href="{{ config.base_url }}/">HOME</a></li>
+            {% set target_section = get_section(path="pages/_index.md") %}
+            {% for p in target_section.pages %}  
+                <li {% if current_url == p.permalink %}class="active"{% endif %}><a href="{{ p.permalink }}">{{ p.title }}</a></li>
+            {% endfor %}
+        </ul>
+        </nav>
+    </header>
+    <main>
+        <nav>
+            <ul>
+            {% set target_section = get_section(path="posts/_index.md") %}
+            {% for p in target_section.pages %}  
+                <li {% if current_url == p.permalink %}class="active"{% endif %}><a href="{{ p.permalink }}">{{ p.title }}</a></li>
+            {% endfor %}
+            </ul>
+        </nav>
+        <article>
+            <h1>{% block h1 %}{% endblock %}</h1>
+            {% block article %}{% endblock %}
+        </article>
+    </main>
+    </body>
+</html>
+

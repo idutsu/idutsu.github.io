@@ -20,14 +20,12 @@
     color: inherit;
 }
 
-ul {
-    list-style-type: none;
-}
-
 html {
     width: 100%;
     height: 100%;
     font-size: 16px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 body {
@@ -38,6 +36,17 @@ body {
     overflow: hidden;
     color: var(--text-color);
     background-color: var(--bg-color);
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    display: none;
+}
+
+ul {
+    list-style-type: none;
 }
 
 header {
@@ -87,6 +96,9 @@ main nav {
     height: 100%;
     border-right: 1px solid var(--text-color);
     padding: 1rem;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    overflow-y: scroll;
 }
 
 main nav ul li {
@@ -107,6 +119,9 @@ main article {
     flex: 1;
     height: 100%;
     padding: 1rem;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    overflow-y: scroll;
 }
 
 main article h1,
@@ -152,10 +167,17 @@ main article a {
 
 @media (max-width: 768px) {
     html {
+        height: auto;
         font-size: 18px;
     }
 
+    body {
+        height: auto;
+        overflow-y: auto;
+    }
+
     main {
+        height: auto;
         flex-direction: column;
     }
 

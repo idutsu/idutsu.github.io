@@ -98,7 +98,7 @@ main nav {
     padding: 1rem;
     -ms-overflow-style: none;
     scrollbar-width: none;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 main nav ul li {
@@ -167,12 +167,10 @@ main article a {
 
 @media (max-width: 768px) {
     html {
-        height: auto;
         font-size: 18px;
     }
 
     body {
-        height: auto;
         overflow-y: auto;
     }
 
@@ -182,6 +180,7 @@ main article a {
     }
 
     main nav {
+        flex: none;
         order: 2;
         border-right: none;
         border-top: 1px solid var(--text-color);

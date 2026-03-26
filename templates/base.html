@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ get_url(path="css/style.css") | safe }}">
     <link rel="icon" href="{{ get_url(path="favicon.png") }}">
     <title>{% block title %}{% endblock %} | {{config.title}}</title>
@@ -27,7 +30,7 @@
     <main>
         <nav>
             <ul>
-            {% set target_section = get_section(path="posts/_index.md") %}
+            {% set target_section = get_section(path="sents/_index.md") %}
             {% for p in target_section.pages %}  
                 <li {% if current_url == p.permalink %}class="active"{% endif %}><a href="{{ p.permalink }}">{{ p.title }}</a></li>
             {% endfor %}
@@ -37,6 +40,22 @@
             <h1>{% block h1 %}{% endblock %}</h1>
             {% block article %}{% endblock %}
         </article>
+        <nav>
+            <ul>
+            {% set target_section = get_section(path="nouns/_index.md") %}
+            {% for p in target_section.pages %}  
+                <li {% if current_url == p.permalink %}class="active"{% endif %}><a href="{{ p.permalink }}">{{ p.title }}</a></li>
+            {% endfor %}
+            </ul>
+        </nav>
+        <nav>
+            <ul>
+            {% set target_section = get_section(path="verbs/_index.md") %}
+            {% for p in target_section.pages %}  
+                <li {% if current_url == p.permalink %}class="active"{% endif %}><a href="{{ p.permalink }}">{{ p.title }}</a></li>
+            {% endfor %}
+            </ul>
+        </nav>
     </main>
     </body>
 </html>

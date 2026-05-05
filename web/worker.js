@@ -100,8 +100,9 @@ const start = async (sqlite3) => {
             }
         }
 
-        const DB_URL = "https://github.com/idutsu/idutsu.github.io/releases/download/v1.0.0/wo.db";
-
+        const DB_URL =
+            "https://corsproxy.io/?" +
+            encodeURIComponent("https://github.com/idutsu/idutsu.github.io/releases/download/v1.0.0/wo.db");
         if (needsDownload) {
             console.log("データベースは存在しませんでした");
             console.log("データベースをダウンロードします");

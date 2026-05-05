@@ -1,65 +1,6 @@
-let worker;
-let LIMIT;
+const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
 
-if (!window.crossOriginIsolated) {
-    console.warn("セキュリティヘッダーが適用されていません");
-} else {
-    console.log("セキュリティヘッダーが適用されました");
-    worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
-    worker.onmessage = (e) => {
-        isWorking = false;
-        const { type, result } = e.data;
-        if (type === "ready") {
-            console.log("読み込み中...");
-            const urlParams = new URLSearchParams(window.location.search);
-            const nounValue = urlParams.get("noun");
-            const verbValue = urlParams.get("verb");
-            postMessageWithFlag({ action: "init", payload: { nounValue, verbValue } });
-        } else if (type === "error") {
-            console.error("Workerでエラーが発生しました：", e.data.error);
-        } else if (type === "init_result") {
-            const { sentencesExample, sentencesFavorite, nounsFavorite, verbsFavorite, generateSentences } = result;
-            updateItems(MODE.SENTENCE_EXAMPLE, sentencesExample.items);
-            updateItems(MODE.NOUN_FAVORITE, nounsFavorite.items);
-            updateItems(MODE.VERB_FAVORITE, verbsFavorite.items);
-            updateItems(MODE.SENTENCE_FAVORITE, sentencesFavorite.items);
-            updateItems(MODE.GENERATE, generateSentences.items);
-            setMode(MODE.SENTENCE_EXAMPLE);
-            document.getElementById("loading").style.display = "none";
-            document.getElementById("app").style.visibility = "visible";
-            console.log("読み込みが完了しました");
-        } else if (type === "getItems_result") {
-            const { type, items } = result;
-            updateItems(type, items);
-        } else if (type === "deleteWord_result") {
-            updateDeletedItem(getMode(), {
-                type: result.type,
-                data: [result.word],
-            });
-        } else if (type === "saveWord_result") {
-            updateSavedItem(getMode(), {
-                type: result.type,
-                data: [result.word],
-            });
-        } else if (type === "deleteSentence_result") {
-            updateDeletedItem(getMode(), {
-                type: result.type,
-                data: [result.noun, result.verb],
-            });
-        } else if (type === "saveSentence_result") {
-            updateSavedItem(getMode(), {
-                type: result.type,
-                data: [result.noun, result.verb],
-            });
-        } else if (type === "generateSentences_result") {
-            updateItems(MODE.GENERATE, result.items);
-            if (result.items.length > 0) setMode(MODE.GENERATE);
-        } else if (type === "generateSentencesWithWord_result") {
-            updateItems(MODE.GENERATE, result.items);
-            if (result.items.length > 0) setMode(MODE.GENERATE);
-        }
-    };
-}
+let LIMIT;
 
 const MODE = {
     SENTENCE_EXAMPLE: "sentence_example",
@@ -304,6 +245,60 @@ const updateSavedItem = (mode, { type, data }) => {
     renderList(type);
     const word = data[0] + (data[1] ? " を " + data[1] : "");
     console.log("「" + word + "」を保存しました");
+};
+
+worker.onmessage = (e) => {
+    isWorking = false;
+    const { type, result } = e.data;
+    if (type === "ready") {
+        console.log("読み込み中...");
+        const urlParams = new URLSearchParams(window.location.search);
+        const nounValue = urlParams.get("noun");
+        const verbValue = urlParams.get("verb");
+        postMessageWithFlag({ action: "init", payload: { nounValue, verbValue } });
+    } else if (type === "error") {
+        console.error("Workerでエラーが発生しました：", e.data.error);
+    } else if (type === "init_result") {
+        const { sentencesExample, sentencesFavorite, nounsFavorite, verbsFavorite, generateSentences } = result;
+        updateItems(MODE.SENTENCE_EXAMPLE, sentencesExample.items);
+        updateItems(MODE.NOUN_FAVORITE, nounsFavorite.items);
+        updateItems(MODE.VERB_FAVORITE, verbsFavorite.items);
+        updateItems(MODE.SENTENCE_FAVORITE, sentencesFavorite.items);
+        updateItems(MODE.GENERATE, generateSentences.items);
+        setMode(MODE.SENTENCE_EXAMPLE);
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("app").style.visibility = "visible";
+        console.log("読み込みが完了しました");
+    } else if (type === "getItems_result") {
+        const { type, items } = result;
+        updateItems(type, items);
+    } else if (type === "deleteWord_result") {
+        updateDeletedItem(getMode(), {
+            type: result.type,
+            data: [result.word],
+        });
+    } else if (type === "saveWord_result") {
+        updateSavedItem(getMode(), {
+            type: result.type,
+            data: [result.word],
+        });
+    } else if (type === "deleteSentence_result") {
+        updateDeletedItem(getMode(), {
+            type: result.type,
+            data: [result.noun, result.verb],
+        });
+    } else if (type === "saveSentence_result") {
+        updateSavedItem(getMode(), {
+            type: result.type,
+            data: [result.noun, result.verb],
+        });
+    } else if (type === "generateSentences_result") {
+        updateItems(MODE.GENERATE, result.items);
+        if (result.items.length > 0) setMode(MODE.GENERATE);
+    } else if (type === "generateSentencesWithWord_result") {
+        updateItems(MODE.GENERATE, result.items);
+        if (result.items.length > 0) setMode(MODE.GENERATE);
+    }
 };
 
 window.addEventListener("keydown", (e) => {

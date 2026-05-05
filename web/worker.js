@@ -95,7 +95,9 @@ const start = async (sqlite3) => {
                 needsDownload = false;
             }
         } catch (e) {
-            console.warn("OPFSの確認中にエラーが発生しました：", e);
+            if (e.name !== "NotFoundError") {
+                console.warn("OPFSの確認中にエラーが発生しました：", e);
+            }
         }
 
         const DB_URL = "https://pub-d666494efb334b1cab0884f65861efc4.r2.dev/wo.db";

@@ -122,7 +122,7 @@ const start = async (sqlite3) => {
                 receivedLength += value.length;
                 if (contentLength) {
                     const percentage = Math.round((receivedLength / contentLength) * 100);
-                    postMessage({ type: "download_progress", percentage });
+                    postMessage({ type: "download_progress", result: percentage });
                 }
             }
 

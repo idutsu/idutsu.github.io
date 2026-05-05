@@ -1,3 +1,9 @@
+const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+if (isMobile) {
+    document.getElementById("loading").textContent = "を研究所はPC専用のページです";
+    throw new Error("を研究所はPC専用のページです");
+}
+
 const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
 
 let LIMIT;

@@ -80,16 +80,6 @@
             </main>
             <footer>(C)を研究所</footer>
         </div>
-        <script>
-            const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
-            if (!isMobile) {
-                const script = document.createElement("script");
-                script.type = "module";
-                script.src = "/main.js";
-                document.head.appendChild(script);
-            } else {
-                document.getElementById("loading").textContent = "を研究所はPC専用のページです";
-            }
-        </script>
+        <script type="module" src="/main.js"></script>
     </body>
 </html>

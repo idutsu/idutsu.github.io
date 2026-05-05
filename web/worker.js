@@ -102,43 +102,33 @@ const start = async (sqlite3) => {
 
         const DB_URL = "https://pub-d666494efb334b1cab0884f65861efc4.r2.dev/wo.db";
         if (needsDownload) {
-            console.log("データベースは存在しませんでした");
             console.log("データベースをダウンロードします");
             const response = await fetch(DB_URL);
-            if (!response.ok) {
-                throw new Error(`ダウンロード失敗: ステータス ${response.status} ${response.statusText}`);
-            }
+            if (!response.ok) throw new Error(`データベースのダウンロードに失敗しました： ${response.status}`);
 
             const contentLength = +response.headers.get("Content-Length");
             const reader = response.body.getReader();
+
+            const fileHandle = await root.getFileHandle(filename, { create: true });
+            const accessHandle = await fileHandle.createSyncAccessHandle();
+            accessHandle.truncate(0);
+
             let receivedLength = 0;
-            let chunks = [];
 
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
-                chunks.push(value);
+                accessHandle.write(value);
                 receivedLength += value.length;
-
                 if (contentLength) {
                     const percentage = Math.round((receivedLength / contentLength) * 100);
                     postMessage({ type: "download_progress", percentage });
                 }
             }
 
-            let buffer = new Uint8Array(receivedLength);
-            let position = 0;
-            for (let chunk of chunks) {
-                buffer.set(chunk, position);
-                position += chunk.length;
-            }
-
-            const fileHandle = await root.getFileHandle(filename, { create: true });
-            const accessHandle = await fileHandle.createSyncAccessHandle();
-            accessHandle.truncate(0);
-            accessHandle.write(buffer);
             accessHandle.flush();
             accessHandle.close();
+            console.log("データベースをOPFSに保存しました");
         }
         const db = new sqlite3.oo1.OpfsDb("/" + filename);
         console.log("データベースに接続しました");

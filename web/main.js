@@ -1,13 +1,14 @@
 const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 if (isMobile) {
-    document.getElementById("loading").textContent = "※を研究所はPC専用のページです";
-    throw new Error("※を研究所はPC専用のページです");
+    const mobileMessage = "※このページはPC専用です";
+    document.getElementById("loading").textContent = mobileMessage;
+    throw new Error(mobileMessage);
 }
 
 if (!navigator.storage || !navigator.storage.getDirectory) {
-    document.getElementById("loading").textContent =
-        "※このブラウザはOPFSをサポートしていません。最新のブラウザを使用してください。";
-    throw new Error("※このブラウザはOPFSをサポートしていません。最新のブラウザを使用してください。");
+    const opfsMessage = "※このブラウザはOPFSをサポートしていません。最新のブラウザを使用してください。";
+    document.getElementById("loading").textContent = opfsMessage;
+    throw new Error(opfsMessage);
 }
 
 const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });

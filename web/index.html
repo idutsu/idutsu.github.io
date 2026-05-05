@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <script src="./coi-serviceworker.js"></script>
+        <link rel="stylesheet" href="./style.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>を研究所</title>
+    </head>
+    <body>
+        <p id="loading">読み込み中・・・</p>
+        <div id="app">
+            <header>
+                <h1>を研究所</h1>
+                <div id="keys">
+                    <dl id="sentence_example-key">
+                        <dt>SPACE</dt>
+                        <dd>更新</dd>
+                        <dt>S</dt>
+                        <dd>名詞を保存</dd>
+                        <dt>SHIFT + S</dt>
+                        <dd>動詞を保存</dd>
+                    </dl>
+                    <dl id="noun_favorite-key">
+                        <dt>SPACE</dt>
+                        <dd>更新</dd>
+                        <dt>ENTER</dt>
+                        <dd>選択中の名詞と動詞全部で作文</dd>
+                        <dt>D</dt>
+                        <dd>名詞から削除</dd>
+                        <dt>S</dt>
+                        <dd>名詞を再保存</dd>
+                    </dl>
+                    <dl id="verb_favorite-key">
+                        <dt>SPACE</dt>
+                        <dd>更新</dd>
+                        <dt>ENTER</dt>
+                        <dd>洗濯中の動詞と名詞全部で作文</dd>
+                        <dt>D</dt>
+                        <dd>動詞から削除</dd>
+                        <dt>S</dt>
+                        <dd>動詞を再保存</dd>
+                    </dl>
+                    <dl id="generate-key">
+                        <dt>ENTER</dt>
+                        <dd>名詞と動詞からランダムで作文</dd>
+                        <dt>S</dt>
+                        <dd>お気に入りに保存</dd>
+                    </dl>
+                    <dl id="sentence_favorite-key">
+                        <dt>SPACE</dt>
+                        <dd>更新</dd>
+                        <dt>D</dt>
+                        <dd>お気に入りから削除</dd>
+                        <dt>S</dt>
+                        <dd>お気に入りに再保存</dd>
+                    </dl>
+                    <dl>
+                        <dt>↓</dt>
+                        <dt>↑</dt>
+                        <dd>アイテム選択</dd>
+                        <dt>→</dt>
+                        <dt>←</dt>
+                        <dd>モード切り替え</dd>
+                    </dl>
+                </div>
+            </header>
+            <nav>
+                <h2 id="sentence_example-title">例文</h2>
+                <h2 id="noun_favorite-title">名詞</h2>
+                <h2 id="verb_favorite-title">動詞</h2>
+                <h2 id="generate-title">作文</h2>
+                <h2 id="sentence_favorite-title">お気に入り</h2>
+            </nav>
+            <main>
+                <ul id="sentence_example-list"></ul>
+                <ul id="noun_favorite-list"></ul>
+                <ul id="verb_favorite-list"></ul>
+                <ul id="generate-list"></ul>
+                <ul id="sentence_favorite-list"></ul>
+            </main>
+            <footer>(C)を研究所</footer>
+        </div>
+        <script type="module" src="/main.js"></script>
+    </body>
+</html>

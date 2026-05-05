@@ -86,23 +86,23 @@ const start = async (sqlite3) => {
 
         let needsDownload = true;
 
-        console.log("データベースの存在を確認します");
+        console.log("OPFSのデータベースを確認します");
         try {
             const fileHandle = await root.getFileHandle(filename);
             const file = await fileHandle.getFile();
             if (file.size > 0) {
-                console.log("データベースは存在しました");
+                console.log("OPFSにデータベースが存在しました");
                 needsDownload = false;
             }
         } catch (e) {
-            if (e.name !== "NotFoundError") {
-                console.warn("データベースの確認中にエラーが発生しました：", e);
-            }
+            console.warn("OPFSの確認中にエラーが発生しました：", e);
         }
 
         const DB_URL = "https://pub-d666494efb334b1cab0884f65861efc4.r2.dev/wo.db";
+
         if (needsDownload) {
-            console.log("データベースをダウンロードします");
+            console.log("OPFSにデータベースは存在しませんでした");
+            console.log("サーバーからOPFSにデータベースを読み込みます");
             const response = await fetch(DB_URL, { cache: "no-store" });
             if (!response.ok) throw new Error(`データベースのダウンロードに失敗しました： ${response.status}`);
 
@@ -128,10 +128,10 @@ const start = async (sqlite3) => {
 
             accessHandle.flush();
             accessHandle.close();
-            console.log("データベースをOPFSに保存しました");
+            console.log("OPFSにデータベースを読み込みました");
         }
         const db = new sqlite3.oo1.OpfsDb("/" + filename);
-        console.log("データベースに接続しました");
+        console.log("OPFSのデータベースに接続しました");
 
         postMessage({ type: "ready" });
 

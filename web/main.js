@@ -28,7 +28,7 @@ document.querySelector("footer").style.height = `calc(40px + ${halfRemainder}px)
 mainEl.style.height = `${LIMIT * itemHeight}px`;
 
 mainEl.removeChild(dummyUl);
-console.log(`表示件数(LIMIT)を ${LIMIT} に設定しました`);
+console.log(`各モードの表示件数(LIMIT)を ${LIMIT} に設定しました`);
 
 Object.values(MODE).forEach((mode) => {
     const list = document.getElementById(mode + "-list");
@@ -251,7 +251,7 @@ worker.onmessage = (e) => {
     isWorking = false;
     const { type, result } = e.data;
     if (type === "ready") {
-        console.log("読み込み中...");
+        console.log("データを読み込んでいます...");
         const urlParams = new URLSearchParams(window.location.search);
         const nounValue = urlParams.get("noun");
         const verbValue = urlParams.get("verb");
@@ -260,7 +260,7 @@ worker.onmessage = (e) => {
         console.error("Workerでエラーが発生しました：", e.data.error);
     } else if (type === "download_progress") {
         const statusEl = document.getElementById("loading");
-        statusEl.innerText = `読み込み中... ${result}%`;
+        statusEl.innerText = `読み込み中...（${result}%）`;
     } else if (type === "init_result") {
         const { sentencesExample, sentencesFavorite, nounsFavorite, verbsFavorite, generateSentences } = result;
         updateItems(MODE.SENTENCE_EXAMPLE, sentencesExample.items);
@@ -271,7 +271,7 @@ worker.onmessage = (e) => {
         setMode(MODE.SENTENCE_EXAMPLE);
         document.getElementById("loading").style.display = "none";
         document.getElementById("app").style.visibility = "visible";
-        console.log("読み込みが完了しました");
+        console.log("データを読み込みました");
     } else if (type === "getItems_result") {
         const { type, items } = result;
         updateItems(type, items);

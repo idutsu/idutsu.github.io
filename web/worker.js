@@ -107,7 +107,9 @@ const start = async (sqlite3) => {
             console.log("データベースは存在しませんでした");
             console.log("データベースをダウンロードします");
             const response = await fetch(DB_URL);
-            if (!response.ok) throw new Error("データベースのダウンロードに失敗しました");
+            if (!response.ok) {
+                throw new Error(`ダウンロード失敗: ステータス ${response.status} ${response.statusText}`);
+            }
             const buffer = await response.arrayBuffer();
             const fileHandle = await root.getFileHandle(filename, { create: true });
             const accessHandle = await fileHandle.createSyncAccessHandle();

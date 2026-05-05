@@ -134,7 +134,7 @@ const start = async (sqlite3) => {
             }
         };
     } catch (err) {
-        console.error("Workerにエラーが発生しました：", err.message);
+        console.error("Workerエラーが発生しました：", err.message);
         postMessage({ type: "error", error: err.message });
     }
 };

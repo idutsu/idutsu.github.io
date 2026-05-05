@@ -103,7 +103,7 @@ const start = async (sqlite3) => {
         const DB_URL = "https://pub-d666494efb334b1cab0884f65861efc4.r2.dev/wo.db";
         if (needsDownload) {
             console.log("データベースをダウンロードします");
-            const response = await fetch(DB_URL);
+            const response = await fetch(DB_URL, { cache: "no-store" });
             if (!response.ok) throw new Error(`データベースのダウンロードに失敗しました： ${response.status}`);
 
             const contentLength = +response.headers.get("Content-Length");

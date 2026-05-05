@@ -100,10 +100,12 @@ const start = async (sqlite3) => {
             }
         }
 
+        const DB_URL = "https://github.com/idutsu/idutsu.github.io/releases/download/v1.0.0/wo.db";
+
         if (needsDownload) {
             console.log("データベースは存在しませんでした");
             console.log("データベースをダウンロードします");
-            const response = await fetch("/wo.db");
+            const response = await fetch(DB_URL);
             if (!response.ok) throw new Error("データベースのダウンロードに失敗しました");
             const buffer = await response.arrayBuffer();
             const fileHandle = await root.getFileHandle(filename, { create: true });

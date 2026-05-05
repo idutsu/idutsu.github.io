@@ -258,6 +258,9 @@ worker.onmessage = (e) => {
         postMessageWithFlag({ action: "init", payload: { nounValue, verbValue } });
     } else if (type === "error") {
         console.error("Workerでエラーが発生しました：", e.data.error);
+    } else if (type === "download_progress") {
+        const statusEl = document.getElementById("loading");
+        statusEl.innerText = `読み込み中... ${percentage}%`;
     } else if (type === "init_result") {
         const { sentencesExample, sentencesFavorite, nounsFavorite, verbsFavorite, generateSentences } = result;
         updateItems(MODE.SENTENCE_EXAMPLE, sentencesExample.items);

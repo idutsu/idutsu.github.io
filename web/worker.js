@@ -108,11 +108,35 @@ const start = async (sqlite3) => {
             if (!response.ok) {
                 throw new Error(`ダウンロード失敗: ステータス ${response.status} ${response.statusText}`);
             }
-            const buffer = await response.arrayBuffer();
+
+            const contentLength = +response.headers.get("Content-Length");
+            const reader = response.body.getReader();
+            let receivedLength = 0;
+            let chunks = [];
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                chunks.push(value);
+                receivedLength += value.length;
+
+                if (contentLength) {
+                    const percentage = Math.round((receivedLength / contentLength) * 100);
+                    postMessage({ type: "download_progress", percentage });
+                }
+            }
+
+            let buffer = new Uint8Array(receivedLength);
+            let position = 0;
+            for (let chunk of chunks) {
+                buffer.set(chunk, position);
+                position += chunk.length;
+            }
+
             const fileHandle = await root.getFileHandle(filename, { create: true });
             const accessHandle = await fileHandle.createSyncAccessHandle();
             accessHandle.truncate(0);
-            accessHandle.write(new Uint8Array(buffer));
+            accessHandle.write(buffer);
             accessHandle.flush();
             accessHandle.close();
         }

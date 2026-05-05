@@ -215,23 +215,15 @@ const renderList = (mode) => {
 };
 
 const updateItems = (mode, items) => {
-    if (items.length === 0) {
-        STATE[mode].items = [];
-        STATE[mode].index = 0;
-        STATE[mode].offset = 0;
-        renderList(mode);
-        console.log("「" + STATE[mode].name + "」は空です");
-    } else {
-        const allItems = items.map((row) => {
-            const text = row[0] + (row[1] ? " を " + row[1] : "");
-            return { text: text, isDelete: false, data: row };
-        });
-        STATE[mode].items = allItems;
-        STATE[mode].index = 0;
-        STATE[mode].offset = 0;
-        renderList(mode);
-        console.log("「" + STATE[mode].name + "」を更新しました");
-    }
+    const allItems = items.map((row) => {
+        const text = row[0] + (row[1] ? " を " + row[1] : "");
+        return { text: text, isDelete: false, data: row };
+    });
+    STATE[mode].items = allItems;
+    STATE[mode].index = 0;
+    STATE[mode].offset = 0;
+    renderList(mode);
+    console.log("「" + STATE[mode].name + "」を更新しました");
 };
 
 const updateDeletedItem = (mode, { type, data }) => {
@@ -272,8 +264,7 @@ worker.onmessage = (e) => {
     } else if (type === "error") {
         console.error("Workerでエラーが発生しました：", e.data.error);
     } else if (type === "download_progress") {
-        const statusEl = document.getElementById("loading");
-        statusEl.innerText = `読み込み中...（${result}%）`;
+        document.getElementById("loading").textContent = `読み込み中...（${result}%）`;
     } else if (type === "init_result") {
         const { sentencesExample, sentencesFavorite, nounsFavorite, verbsFavorite, generateSentences } = result;
         updateItems(MODE.SENTENCE_EXAMPLE, sentencesExample.items);

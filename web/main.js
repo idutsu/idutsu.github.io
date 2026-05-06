@@ -2,13 +2,13 @@ const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 if (isMobile) {
     const mobileMessage = "※このページはPC専用です";
     document.getElementById("loading").textContent = mobileMessage;
-    return;
+    throw new Error(mobileMessage);
 }
 
 if (!navigator.storage || !navigator.storage.getDirectory) {
     const opfsMessage = "※このブラウザはOPFSをサポートしていません。最新のブラウザを使用してください。";
     document.getElementById("loading").textContent = opfsMessage;
-    return;
+    throw new Error(opfsMessage);
 }
 
 const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });

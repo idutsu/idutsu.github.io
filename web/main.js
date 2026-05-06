@@ -13,8 +13,6 @@ if (!navigator.storage || !navigator.storage.getDirectory) {
 
 const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
 
-let LIMIT;
-
 const MODE = {
     SENTENCE_EXAMPLE: "sentence_example",
     NOUN_FAVORITE: "noun_favorite",
@@ -32,12 +30,10 @@ mainEl.appendChild(dummyUl);
 
 const listHeight = mainEl.clientHeight;
 const itemHeight = dummyLi.offsetHeight || 24;
-LIMIT = Math.floor(listHeight / itemHeight);
+const LIMIT = Math.floor(listHeight / itemHeight);
 
 const remainder = listHeight % itemHeight;
-const halfRemainder = remainder / 2;
-document.querySelector("header").style.height = `calc(70px + ${halfRemainder}px)`;
-document.querySelector("footer").style.height = `calc(40px + ${halfRemainder}px)`;
+document.querySelector("header").style.height = `calc(70px + ${remainder}px)`;
 mainEl.style.height = `${LIMIT * itemHeight}px`;
 
 mainEl.removeChild(dummyUl);
@@ -423,19 +419,25 @@ window.addEventListener("keydown", (e) => {
     } else {
         const cm = getMode();
 
-        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        if (e.key === "s" || e.key === "w") {
             const state = STATE[cm];
             const { items, index } = state;
 
             if (items.length === 0) return;
 
-            let targetIndex = e.key === "ArrowDown" ? index + 1 : index - 1;
+            let targetIndex = e.key === "s" ? index + 1 : index - 1;
             targetIndex = Math.max(0, Math.min(targetIndex, items.length - 1));
 
             if (targetIndex !== index) {
                 state.index = targetIndex;
                 renderList(cm);
             }
+        } else if (e.key === "d") {
+            e.preventDefault();
+            nextMode();
+        } else if (e.key === "a") {
+            e.preventDefault();
+            prevMode();
         }
     }
 });
@@ -448,7 +450,7 @@ window.addEventListener("keyup", (e) => {
         if (e.key === "r") {
             e.preventDefault();
             hideRegisterArea();
-        } else if (e.key === "s") {
+        } else if (e.key === "ArrowUp") {
             const noun = getInputNounValue();
             const verb = getInputVerbValue();
             if (noun && verb) {
@@ -461,13 +463,7 @@ window.addEventListener("keyup", (e) => {
             exitRegisterArea();
         }
     } else {
-        if (e.code === "ArrowRight") {
-            e.preventDefault();
-            nextMode();
-        } else if (e.code === "ArrowLeft") {
-            e.preventDefault();
-            prevMode();
-        } else if (e.key === "r") {
+        if (e.key === "r") {
             showRegisterArea();
         } else {
             const { items, index } = STATE[cm];
@@ -477,8 +473,10 @@ window.addEventListener("keyup", (e) => {
                     postMessageWithFlag({ action: "getItems", payload: { type: cm } });
                 } else if (isSentenceExampleMode(cm)) {
                     postMessageWithFlag({ action: "getItems", payload: { type: cm } });
+                } else if (isGenerateMode(cm)) {
+                    postMessageWithFlag({ action: "generateSentences" });
                 }
-            } else if (e.key.toLowerCase() === "s") {
+            } else if (e.code === "ArrowUp") {
                 e.preventDefault();
                 if (isNounFavoriteMode(cm) || isVerbFavoriteMode(cm)) {
                     if (items[index].isDelete) {
@@ -513,7 +511,7 @@ window.addEventListener("keyup", (e) => {
                         });
                     }
                 }
-            } else if (e.key === "d") {
+            } else if (e.code === "ArrowDown") {
                 e.preventDefault();
                 if (isNounFavoriteMode(cm) || isVerbFavoriteMode(cm)) {
                     const type = getTableFromMode(cm);
@@ -524,16 +522,6 @@ window.addEventListener("keyup", (e) => {
                     const noun = row[0];
                     const verb = row[1];
                     postMessageWithFlag({ action: "deleteSentence", payload: { noun, verb } });
-                }
-            } else if (e.key === "w") {
-                if (isSentenceExampleMode(cm)) {
-                    e.preventDefault();
-                    postMessageWithFlag({ action: "saveWord", payload: { type: "noun", word: items[index].data[0] } });
-                }
-            } else if (e.key === "e") {
-                if (isSentenceExampleMode(cm)) {
-                    e.preventDefault();
-                    postMessageWithFlag({ action: "saveWord", payload: { type: "verb", word: items[index].data[1] } });
                 }
             } else if (e.key === "Enter") {
                 if (isNounFavoriteMode(cm)) {
@@ -554,8 +542,6 @@ window.addEventListener("keyup", (e) => {
                             targetTable: "noun",
                         },
                     });
-                } else if (isGenerateMode(cm)) {
-                    postMessageWithFlag({ action: "generateSentences" });
                 }
             }
         }

@@ -93,7 +93,7 @@ const {
                 list.classList.remove("selected");
             }
         });
-        const dls = document.querySelectorAll("dl");
+        const dls = document.querySelectorAll("header dl");
         dls.forEach((dl, index) => {
             if (index === dls.length - 1 || dl.id.includes(mode)) {
                 dl.style.display = "inline-block";
@@ -252,15 +252,114 @@ const updateSavedItem = (mode, { type, data }) => {
     console.log("「" + word + "」を保存しました");
 };
 
+const {
+    showRegisterArea,
+    hideRegisterArea,
+    isShowRegisterArea,
+    isFocusRegisterInput,
+    focusRegisterInput,
+    getInputNounValue,
+    getInputVerbValue,
+    exitRegisterArea,
+} = (() => {
+    const registerArea = document.getElementById("register");
+    const inputNoun = document.getElementById("inputNoun");
+    const inputVerb = document.getElementById("inputVerb");
+    const hideIsInput = document.querySelectorAll(".hide-is-input");
+
+    const inputs = [inputNoun, inputVerb];
+
+    let isShow = false;
+    let isFocus = false;
+
+    inputs.forEach((input) => {
+        input.addEventListener("focus", () => {
+            isFocus = true;
+            hideIsInput.forEach((el) => {
+                el.style.display = "none";
+            });
+        });
+
+        input.addEventListener("blur", (e) => {
+            if (inputs.includes(e.relatedTarget)) return;
+            isFocus = false;
+            hideIsInput.forEach((el) => {
+                el.style.display = "";
+            });
+        });
+    });
+
+    const _escapeHTML = (str) => {
+        if (!str) return "";
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    };
+
+    const showRegisterArea = () => {
+        registerArea.style.display = "flex";
+        isShow = true;
+    };
+
+    const hideRegisterArea = () => {
+        registerArea.style.display = "none";
+        isShow = false;
+    };
+
+    const isShowRegisterArea = () => {
+        return isShow;
+    };
+
+    const isFocusRegisterInput = () => {
+        return isFocus;
+    };
+
+    const focusRegisterInput = () => {
+        if (!isShow) return;
+        const currentIndex = inputs.indexOf(document.activeElement);
+        if (currentIndex === inputs.length - 1) {
+            document.activeElement.blur();
+            return;
+        }
+        const nextIndex = currentIndex + 1;
+        inputs[nextIndex].focus();
+    };
+
+    const getInputNounValue = () => {
+        return _escapeHTML(inputNoun.value.trim());
+    };
+
+    const getInputVerbValue = () => {
+        return _escapeHTML(inputVerb.value.trim());
+    };
+
+    const exitRegisterArea = () => {
+        inputNoun.value = "";
+        inputVerb.value = "";
+        hideRegisterArea();
+    };
+
+    return {
+        showRegisterArea,
+        hideRegisterArea,
+        isShowRegisterArea,
+        isFocusRegisterInput,
+        focusRegisterInput,
+        getInputNounValue,
+        getInputVerbValue,
+        exitRegisterArea,
+    };
+})();
+
 worker.onmessage = (e) => {
     isWorking = false;
     const { type, result } = e.data;
     if (type === "ready") {
         console.log("データを読み込んでいます...");
-        const urlParams = new URLSearchParams(window.location.search);
-        const nounValue = urlParams.get("noun");
-        const verbValue = urlParams.get("verb");
-        postMessageWithFlag({ action: "init", payload: { nounValue, verbValue } });
+        postMessageWithFlag({ action: "init" });
     } else if (type === "error") {
         console.error("Workerでエラーが発生しました：", e.data.error);
     } else if (type === "download_progress") {
@@ -309,25 +408,34 @@ worker.onmessage = (e) => {
 };
 
 window.addEventListener("keydown", (e) => {
-    const cm = getMode();
-    if (isWorking) return;
-
-    if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)) {
+    if (["Tab", "Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)) {
         e.preventDefault();
     }
 
-    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-        const state = STATE[cm];
-        const { items, index } = state;
+    if (isWorking) return;
 
-        if (items.length === 0) return;
+    if (isShowRegisterArea()) {
+        if (e.key === "Enter") {
+            if (e.isComposing) return;
+            e.preventDefault();
+            focusRegisterInput();
+        }
+    } else {
+        const cm = getMode();
 
-        let targetIndex = e.key === "ArrowDown" ? index + 1 : index - 1;
-        targetIndex = Math.max(0, Math.min(targetIndex, items.length - 1));
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+            const state = STATE[cm];
+            const { items, index } = state;
 
-        if (targetIndex !== index) {
-            state.index = targetIndex;
-            renderList(cm);
+            if (items.length === 0) return;
+
+            let targetIndex = e.key === "ArrowDown" ? index + 1 : index - 1;
+            targetIndex = Math.max(0, Math.min(targetIndex, items.length - 1));
+
+            if (targetIndex !== index) {
+                state.index = targetIndex;
+                renderList(cm);
+            }
         }
     }
 });
@@ -335,93 +443,120 @@ window.addEventListener("keydown", (e) => {
 window.addEventListener("keyup", (e) => {
     const cm = getMode();
     if (isWorking) return;
-    if (e.code === "ArrowRight") {
-        e.preventDefault();
-        nextMode();
-    } else if (e.code === "ArrowLeft") {
-        e.preventDefault();
-        prevMode();
-    } else {
-        const { items, index } = STATE[cm];
-        if (e.key === " ") {
+    if (isShowRegisterArea()) {
+        if (isFocusRegisterInput()) return;
+        if (e.key === "r") {
             e.preventDefault();
-            if (isFavoriteMode(cm)) {
-                postMessageWithFlag({ action: "getItems", payload: { type: cm } });
-            } else if (isSentenceExampleMode(cm)) {
-                postMessageWithFlag({ action: "getItems", payload: { type: cm } });
-            }
-        } else if (e.key.toLowerCase() === "s") {
-            e.preventDefault();
-            if (isNounFavoriteMode(cm) || isVerbFavoriteMode(cm)) {
-                if (items[index].isDelete) {
-                    const type = getTableFromMode(cm);
-                    const word = items[index].text;
-                    postMessageWithFlag({ action: "saveWord", payload: { type, word } });
-                }
-            } else if (isGenerateMode(cm)) {
-                const row = items[index].data;
-                const noun = row[0];
-                const verb = row[1];
+            hideRegisterArea();
+        } else if (e.key === "s") {
+            const noun = getInputNounValue();
+            const verb = getInputVerbValue();
+            if (noun && verb) {
                 postMessageWithFlag({ action: "saveSentence", payload: { noun, verb } });
-            } else if (isSentenceFavoriteMode(cm)) {
-                if (items[index].isDelete) {
+            } else if (!noun && verb) {
+                postMessageWithFlag({ action: "saveWord", payload: { type: "verb", word: verb } });
+            } else if (noun && !verb) {
+                postMessageWithFlag({ action: "saveWord", payload: { type: "noun", word: noun } });
+            }
+            exitRegisterArea();
+        }
+    } else {
+        if (e.code === "ArrowRight") {
+            e.preventDefault();
+            nextMode();
+        } else if (e.code === "ArrowLeft") {
+            e.preventDefault();
+            prevMode();
+        } else if (e.key === "r") {
+            showRegisterArea();
+        } else {
+            const { items, index } = STATE[cm];
+            if (e.key === " ") {
+                e.preventDefault();
+                if (isFavoriteMode(cm)) {
+                    postMessageWithFlag({ action: "getItems", payload: { type: cm } });
+                } else if (isSentenceExampleMode(cm)) {
+                    postMessageWithFlag({ action: "getItems", payload: { type: cm } });
+                }
+            } else if (e.key.toLowerCase() === "s") {
+                e.preventDefault();
+                if (isNounFavoriteMode(cm) || isVerbFavoriteMode(cm)) {
+                    if (items[index].isDelete) {
+                        const type = getTableFromMode(cm);
+                        const word = items[index].text;
+                        postMessageWithFlag({ action: "saveWord", payload: { type, word } });
+                    }
+                } else if (isGenerateMode(cm)) {
                     const row = items[index].data;
                     const noun = row[0];
                     const verb = row[1];
                     postMessageWithFlag({ action: "saveSentence", payload: { noun, verb } });
+                } else if (isSentenceFavoriteMode(cm)) {
+                    if (items[index].isDelete) {
+                        const row = items[index].data;
+                        const noun = row[0];
+                        const verb = row[1];
+                        postMessageWithFlag({ action: "saveSentence", payload: { noun, verb } });
+                    }
+                } else if (isSentenceExampleMode(cm)) {
+                    if (e.shiftKey) {
+                        e.preventDefault();
+                        postMessageWithFlag({
+                            action: "saveWord",
+                            payload: { type: "verb", word: items[index].data[1] },
+                        });
+                    } else {
+                        e.preventDefault();
+                        postMessageWithFlag({
+                            action: "saveWord",
+                            payload: { type: "noun", word: items[index].data[0] },
+                        });
+                    }
                 }
-            } else if (isSentenceExampleMode(cm)) {
-                if (e.shiftKey) {
-                    e.preventDefault();
-                    postMessageWithFlag({ action: "saveWord", payload: { type: "verb", word: items[index].data[1] } });
-                } else {
+            } else if (e.key === "d") {
+                e.preventDefault();
+                if (isNounFavoriteMode(cm) || isVerbFavoriteMode(cm)) {
+                    const type = getTableFromMode(cm);
+                    const word = items[index].text;
+                    postMessageWithFlag({ action: "deleteWord", payload: { type, word } });
+                } else if (isSentenceFavoriteMode(cm)) {
+                    const row = items[index].data;
+                    const noun = row[0];
+                    const verb = row[1];
+                    postMessageWithFlag({ action: "deleteSentence", payload: { noun, verb } });
+                }
+            } else if (e.key === "w") {
+                if (isSentenceExampleMode(cm)) {
                     e.preventDefault();
                     postMessageWithFlag({ action: "saveWord", payload: { type: "noun", word: items[index].data[0] } });
                 }
-            }
-        } else if (e.key === "d") {
-            e.preventDefault();
-            if (isNounFavoriteMode(cm) || isVerbFavoriteMode(cm)) {
-                const type = getTableFromMode(cm);
-                const word = items[index].text;
-                postMessageWithFlag({ action: "deleteWord", payload: { type, word } });
-            } else if (isSentenceFavoriteMode(cm)) {
-                const row = items[index].data;
-                const noun = row[0];
-                const verb = row[1];
-                postMessageWithFlag({ action: "deleteSentence", payload: { noun, verb } });
-            }
-        } else if (e.key === "w") {
-            if (isSentenceExampleMode(cm)) {
-                e.preventDefault();
-                postMessageWithFlag({ action: "saveWord", payload: { type: "noun", word: items[index].data[0] } });
-            }
-        } else if (e.key === "e") {
-            if (isSentenceExampleMode(cm)) {
-                e.preventDefault();
-                postMessageWithFlag({ action: "saveWord", payload: { type: "verb", word: items[index].data[1] } });
-            }
-        } else if (e.key === "Enter") {
-            if (isNounFavoriteMode(cm)) {
-                postMessageWithFlag({
-                    action: "generateSentencesWithWord",
-                    payload: {
-                        fixedTable: "noun",
-                        fixedWord: items[index].text,
-                        targetTable: "verb",
-                    },
-                });
-            } else if (isVerbFavoriteMode(cm)) {
-                postMessageWithFlag({
-                    action: "generateSentencesWithWord",
-                    payload: {
-                        fixedTable: "verb",
-                        fixedWord: items[index].text,
-                        targetTable: "noun",
-                    },
-                });
-            } else if (isGenerateMode(cm)) {
-                postMessageWithFlag({ action: "generateSentences" });
+            } else if (e.key === "e") {
+                if (isSentenceExampleMode(cm)) {
+                    e.preventDefault();
+                    postMessageWithFlag({ action: "saveWord", payload: { type: "verb", word: items[index].data[1] } });
+                }
+            } else if (e.key === "Enter") {
+                if (isNounFavoriteMode(cm)) {
+                    postMessageWithFlag({
+                        action: "generateSentencesWithWord",
+                        payload: {
+                            fixedTable: "noun",
+                            fixedWord: items[index].text,
+                            targetTable: "verb",
+                        },
+                    });
+                } else if (isVerbFavoriteMode(cm)) {
+                    postMessageWithFlag({
+                        action: "generateSentencesWithWord",
+                        payload: {
+                            fixedTable: "verb",
+                            fixedWord: items[index].text,
+                            targetTable: "noun",
+                        },
+                    });
+                } else if (isGenerateMode(cm)) {
+                    postMessageWithFlag({ action: "generateSentences" });
+                }
             }
         }
     }

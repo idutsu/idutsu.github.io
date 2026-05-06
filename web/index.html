@@ -60,7 +60,9 @@
                         <dd>アイテム選択</dd>
                         <dt>←</dt>
                         <dt>→</dt>
-                        <dd>モード切り替え</dd>
+                        <dd>リスト切り替え</dd>
+                        <dt>R</dt>
+                        <dd>入力モード</dd>
                     </dl>
                 </div>
             </header>
@@ -79,6 +81,21 @@
                 <ul id="sentence_favorite-list"></ul>
             </main>
             <footer>(C)を研究所</footer>
+            <div id="register">
+                <div>
+                    <input type="text" id="inputNoun" placeholder="名詞" />
+                    <span> を </span>
+                    <input type="text" id="inputVerb" placeholder="動詞" />
+                </div>
+                <dl>
+                    <dt class="hide-is-input">S</dt>
+                    <dd class="hide-is-input">保存</dd>
+                    <dt class="hide-is-input">R</dt>
+                    <dd class="hide-is-input">終了</dd>
+                    <dt>Enter</dt>
+                    <dd>フォーカス切り替え</dd>
+                </dl>
+            </div>
         </div>
         <script type="module" src="/main.js"></script>
     </body>

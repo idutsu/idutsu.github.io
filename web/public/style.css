@@ -36,6 +36,18 @@ body {
     overflow: hidden;
 }
 
+input[type="text"] {
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    border-radius: 0;
+    background: transparent;
+    font: inherit;
+    color: inherit;
+}
+
 #loading {
     padding: 4px;
 }
@@ -59,7 +71,6 @@ h1 {
 }
 
 dl {
-    display: none;
     font-size: 0.9rem;
 }
 
@@ -164,4 +175,33 @@ main > ul > li.selected {
 
 .deleted {
     opacity: 0.3;
+}
+
+#register {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+#register dl {
+    margin-top: 20px;
+}
+
+#register dt {
+    border-color: white;
+}
+
+#register input[type="text"] {
+    color: black;
+    background-color: white;
+    padding: 4px;
+    margin: 0 4px;
 }

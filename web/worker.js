@@ -1,14 +1,7 @@
 import sqlite3InitModule from "@sqlite.org/sqlite-wasm";
 
 const dbExecute = {
-    init: (db, { limit, nounValue, verbValue } = {}) => {
-        if (nounValue && verbValue) {
-            dbExecute.saveSentence(db, { noun: nounValue, verb: verbValue });
-        } else if (nounValue) {
-            dbExecute.saveWord(db, { type: "noun", word: nounValue });
-        } else if (verbValue) {
-            dbExecute.saveWord(db, { type: "verb", word: verbValue });
-        }
+    init: (db, { limit } = {}) => {
         return {
             sentencesExample: dbExecute.getItems(db, { type: "sentence_example", limit }),
             nounsFavorite: dbExecute.getItems(db, { type: "noun_favorite" }),

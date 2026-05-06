@@ -2,13 +2,13 @@ const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 if (isMobile) {
     const mobileMessage = "※このページはPC専用です";
     document.getElementById("loading").textContent = mobileMessage;
-    throw new Error(mobileMessage);
+    return;
 }
 
 if (!navigator.storage || !navigator.storage.getDirectory) {
     const opfsMessage = "※このブラウザはOPFSをサポートしていません。最新のブラウザを使用してください。";
     document.getElementById("loading").textContent = opfsMessage;
-    throw new Error(opfsMessage);
+    return;
 }
 
 const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
@@ -464,6 +464,7 @@ window.addEventListener("keyup", (e) => {
         }
     } else {
         if (e.key === "r") {
+            e.preventDefault();
             showRegisterArea();
         } else {
             const { items, index } = STATE[cm];

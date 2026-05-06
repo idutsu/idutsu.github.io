@@ -191,6 +191,10 @@ main > ul > li.selected {
     background-color: rgba(0, 0, 0, 0.7);
 }
 
+#register h2 {
+    margin-bottom: 20px;
+}
+
 #register dl {
     margin-top: 20px;
 }
@@ -200,6 +204,7 @@ main > ul > li.selected {
 }
 
 #register input[type="text"] {
+    width: 200px;
     color: black;
     background-color: white;
     padding: 4px;

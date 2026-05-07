@@ -350,18 +350,20 @@ const {
     };
 })();
 
+let isAppReady = false;
+
 worker.onmessage = (e) => {
     isWorking = false;
     const { type, result } = e.data;
-    if (type === "ready") {
-        console.log("データを読み込んでいます...");
-        postMessageWithFlag({ action: "init" });
-    } else if (type === "error") {
+    if (type === "error") {
         console.error("Workerでエラーが発生しました：", e.data.error);
     } else if (type === "wasm_progress") {
-        document.getElementById("loading").textContent = result;
+        document.getElementById("loading").textContent = "データベースのエンジンを準備しています...";
     } else if (type === "download_progress") {
-        document.getElementById("loading").textContent = `読み込み中...（${result}%）`;
+        document.getElementById("loading").textContent = `データベースをダウンロードしています...（${result}%）`;
+    } else if (type === "ready") {
+        console.log("OPFSからデータを読み込んでいます...");
+        postMessageWithFlag({ action: "init" });
     } else if (type === "init_result") {
         const { sentencesExample, sentencesFavorite, nounsFavorite, verbsFavorite, generateSentences } = result;
         updateItems(MODE.SENTENCE_EXAMPLE, sentencesExample.items);
@@ -372,7 +374,8 @@ worker.onmessage = (e) => {
         setMode(MODE.SENTENCE_EXAMPLE);
         document.getElementById("loading").style.display = "none";
         document.getElementById("app").style.visibility = "visible";
-        console.log("データを読み込みました");
+        console.log("OPFSからデータを読み込みました");
+        isAppReady = true;
     } else if (type === "getItems_result") {
         const { type, items } = result;
         updateItems(type, items);
@@ -406,11 +409,12 @@ worker.onmessage = (e) => {
 };
 
 window.addEventListener("keydown", (e) => {
+    if (!isAppReady) return;
+    if (isWorking) return;
+
     if (["Tab", "Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)) {
         e.preventDefault();
     }
-
-    if (isWorking) return;
 
     if (isShowRegisterArea()) {
         if (e.key === "Enter") {
@@ -445,7 +449,7 @@ window.addEventListener("keydown", (e) => {
 });
 
 window.addEventListener("keyup", (e) => {
-    const cm = getMode();
+    if (!isAppReady) return;
     if (isWorking) return;
     if (isShowRegisterArea()) {
         if (isFocusRegisterInput()) return;
@@ -465,6 +469,8 @@ window.addEventListener("keyup", (e) => {
             exitRegisterArea();
         }
     } else {
+        const cm = getMode();
+
         if (e.key === "r") {
             e.preventDefault();
             showRegisterArea();

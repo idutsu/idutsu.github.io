@@ -79,7 +79,8 @@ const start = async (sqlite3) => {
 
         let needsDownload = true;
 
-        console.log("OPFSのデータベースを確認します");
+        console.log("OPFSのデータベースを確認します...");
+
         try {
             const fileHandle = await root.getFileHandle(filename);
             const file = await fileHandle.getFile();
@@ -97,10 +98,9 @@ const start = async (sqlite3) => {
 
         if (needsDownload) {
             console.log("OPFSにデータベースは存在しませんでした");
-            console.log("サーバーからOPFSにデータベースを読み込みます");
+            console.log("データベースをダウンロードします...");
             const response = await fetch(DB_URL, { cache: "no-store" });
             if (!response.ok) throw new Error(`データベースのダウンロードに失敗しました： ${response.status}`);
-
             const contentLength = +response.headers.get("Content-Length");
             const reader = response.body.getReader();
             const fileHandle = await root.getFileHandle(filename, { create: true });
@@ -121,15 +121,16 @@ const start = async (sqlite3) => {
                         postMessage({ type: "download_progress", result: percentage });
                     }
                 }
-
                 accessHandle.flush();
-                console.log("OPFSにデータベースを読み込みました");
+
+                console.log("データベースのダウンロードに成功しました");
+                console.log("データベースをOPFSに保存しました");
             } finally {
                 accessHandle.close();
             }
         }
         const db = new sqlite3.oo1.OpfsDb("/" + filename);
-        console.log("OPFSのデータベースに接続しました");
+        console.log("OPFSに接続しました");
 
         postMessage({ type: "ready" });
 
@@ -146,14 +147,14 @@ const start = async (sqlite3) => {
             }
         };
     } catch (err) {
-        console.error("Workerエラーが発生しました：", err.message);
+        console.error("Workerでエラーが発生しました：", err.message);
         postMessage({ type: "error", error: err.message });
     }
 };
 
 const initializeSQLite = async () => {
-    postMessage({ type: "wasm_progress", result: "エンジンを準備しています..." });
-    console.log("エンジンを準備しています...");
+    postMessage({ type: "wasm_progress" });
+    console.log("データベースのエンジンを準備しています...");
     const sqlite3 = await sqlite3InitModule({
         print: console.log,
         printErr: console.error,

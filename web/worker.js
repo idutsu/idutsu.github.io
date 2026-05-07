@@ -93,7 +93,7 @@ const start = async (sqlite3) => {
             }
         }
 
-        const DB_URL = "https://pub-d666494efb334b1cab0884f65861efc4.r2.dev";
+        const DB_URL = "https://pub-d666494efb334b1cab0884f65861efc4.r2.dev/wo.db";
 
         if (needsDownload) {
             console.log("OPFSにデータベースは存在しませんでした");

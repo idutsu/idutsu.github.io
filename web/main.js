@@ -354,9 +354,13 @@ let isAppReady = false;
 
 worker.onmessage = (e) => {
     isWorking = false;
-    const { type, result } = e.data;
+    const { type, result, error, errorType } = e.data;
     if (type === "error") {
-        console.error("Workerでエラーが発生しました：", e.data.error);
+        console.error("Workerでエラーが発生しました：", error);
+        if (errorType === "INIT_FAILED") {
+            document.getElementById("loading").textContent = "データベースの初期化に失敗しました";
+        }
+        return;
     } else if (type === "wasm_progress") {
         document.getElementById("loading").textContent = "データベースのエンジンを準備しています...";
     } else if (type === "download_progress") {

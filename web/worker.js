@@ -72,45 +72,37 @@ const dbExecute = {
     },
 };
 
+let dbInstance;
+
 const start = async (sqlite3) => {
     const filename = "wo.db";
     try {
         const root = await navigator.storage.getDirectory();
-
         let needsDownload = true;
-
         console.log("OPFSのデータベースを確認します...");
-
-        try {
-            const fileHandle = await root.getFileHandle(filename);
+        const fileHandle = await root.getFileHandle(filename).catch(() => null);
+        if (fileHandle) {
             const file = await fileHandle.getFile();
             if (file.size > 0) {
                 console.log("OPFSにデータベースが存在しました");
                 needsDownload = false;
             }
-        } catch (e) {
-            if (e.name !== "NotFoundError") {
-                console.warn("OPFSの確認中にエラーが発生しました：", e);
-            }
         }
-
-        const DB_URL = "https://pub-d666494efb334b1cab0884f65861efc4.r2.dev/wo.db";
-
         if (needsDownload) {
             console.log("OPFSにデータベースは存在しませんでした");
             console.log("データベースをダウンロードします...");
+            const DB_URL = "https://pub-d666494efb334b1cab0884f65861efc4.r2.dev/wo.db";
             const response = await fetch(DB_URL, { cache: "no-store" });
-            if (!response.ok) throw new Error(`データベースのダウンロードに失敗しました： ${response.status}`);
+            if (!response.ok) {
+                throw new Error(`データベースのダウンロードに失敗しました： ${response.status}`);
+            }
             const contentLength = +response.headers.get("Content-Length");
             const reader = response.body.getReader();
             const fileHandle = await root.getFileHandle(filename, { create: true });
             const accessHandle = await fileHandle.createSyncAccessHandle();
-
             try {
                 accessHandle.truncate(0);
-
                 let receivedLength = 0;
-
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
@@ -122,33 +114,35 @@ const start = async (sqlite3) => {
                     }
                 }
                 accessHandle.flush();
-
                 console.log("データベースのダウンロードに成功しました");
                 console.log("データベースをOPFSに保存しました");
             } finally {
                 accessHandle.close();
             }
         }
-        const db = new sqlite3.oo1.OpfsDb("/" + filename);
+        dbInstance = new sqlite3.oo1.OpfsDb("/" + filename);
         console.log("OPFSに接続しました");
-
         postMessage({ type: "ready" });
-
-        self.onmessage = async (e) => {
-            const { action, payload } = e.data;
-            const method = dbExecute[action];
-            if (method) {
-                try {
-                    const result = method(db, payload);
-                    postMessage({ type: `${action}_result`, result });
-                } catch (err) {
-                    postMessage({ type: "error", error: err.message });
-                }
-            }
-        };
     } catch (err) {
         console.error("Workerでエラーが発生しました：", err.message);
-        postMessage({ type: "error", error: err.message });
+        postMessage({ type: "error", errorMessage: err.message, errorType: "INIT_FAILED" });
+    }
+};
+
+self.onmessage = async (e) => {
+    const { action, payload } = e.data;
+    if (!dbInstance) {
+        postMessage({ type: "error", errorMessage: "まだデータベースの用意ができていません" });
+        return;
+    }
+    const method = dbExecute[action];
+    if (method) {
+        try {
+            const result = method(dbInstance, payload);
+            postMessage({ type: `${action}_result`, result });
+        } catch (err) {
+            postMessage({ type: "error", errorMessage: err.message, errorType: "QUERY_FAILED" });
+        }
     }
 };
 

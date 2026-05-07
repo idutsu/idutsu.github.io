@@ -358,6 +358,8 @@ worker.onmessage = (e) => {
         postMessageWithFlag({ action: "init" });
     } else if (type === "error") {
         console.error("Workerでエラーが発生しました：", e.data.error);
+    } else if (type === "wasm_progress") {
+        document.getElementById("loading").textContent = result;
     } else if (type === "download_progress") {
         document.getElementById("loading").textContent = `読み込み中...（${result}%）`;
     } else if (type === "init_result") {

@@ -149,6 +149,7 @@ const start = async (sqlite3) => {
 };
 
 const initializeSQLite = async () => {
+    postMessage({ type: "wasm_progress", result: "エンジンを準備しています..." });
     const sqlite3 = await sqlite3InitModule({
         print: console.log,
         printErr: console.error,
@@ -156,4 +157,5 @@ const initializeSQLite = async () => {
     await start(sqlite3);
 };
 
+initializeSQLite();
 initializeSQLite();

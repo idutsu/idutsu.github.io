@@ -27,15 +27,12 @@ const dummyLi = document.createElement("li");
 dummyLi.textContent = "太陽を張り込む";
 dummyUl.appendChild(dummyLi);
 mainEl.appendChild(dummyUl);
-
 const listHeight = mainEl.clientHeight;
 const itemHeight = dummyLi.offsetHeight || 24;
 const LIMIT = Math.floor(listHeight / itemHeight);
-
 const remainder = listHeight % itemHeight;
 document.querySelector("header").style.height = `calc(70px + ${remainder}px)`;
 mainEl.style.height = `${LIMIT * itemHeight}px`;
-
 mainEl.removeChild(dummyUl);
 console.log(`各モードの表示件数(LIMIT)を ${LIMIT} に設定しました`);
 
@@ -489,7 +486,7 @@ window.addEventListener("keyup", (e) => {
                 } else if (isGenerateMode(cm)) {
                     postMessageWithFlag({ action: "generateSentences" });
                 }
-            } else if (e.code === "ArrowUp") {
+            } else if (e.key === "ArrowUp") {
                 e.preventDefault();
                 if (isNounFavoriteMode(cm) || isVerbFavoriteMode(cm)) {
                     if (items[index].isDelete) {
@@ -524,7 +521,7 @@ window.addEventListener("keyup", (e) => {
                         });
                     }
                 }
-            } else if (e.code === "ArrowDown") {
+            } else if (e.key === "ArrowDown") {
                 e.preventDefault();
                 if (isNounFavoriteMode(cm) || isVerbFavoriteMode(cm)) {
                     const type = getTableFromMode(cm);

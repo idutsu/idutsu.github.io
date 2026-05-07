@@ -1,13 +1,14 @@
 (() => {
+    const loadingEl = document.getElementById("loading");
+
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
     if (isMobile) {
-        document.getElementById("loading").textContent = "※このページはPC専用です";
+        loadingEl.textContent = "※このページはPC専用です";
         return;
     }
 
     if (!navigator.storage || !navigator.storage.getDirectory) {
-        document.getElementById("loading").textContent =
-            "※このブラウザはOPFSをサポートしていません。最新のブラウザを使用してください。";
+        loadingEl.textContent = "※このブラウザはOPFSをサポートしていません。最新のブラウザを使用してください。";
         return;
     }
 
@@ -350,15 +351,13 @@
         isWorking = false;
         const { type, result, errorMessage, errorType } = e.data;
         if (type === "error") {
-            console.error("Workerでエラーが発生しました：", errorMessage);
-            if (errorType === "INIT_FAILED") {
-                document.getElementById("loading").textContent = "データベースの初期化に失敗しました";
-            }
+            console.error("WORKERエラー：", errorMessage);
+            if (errorType === "INIT_FAILED") loadingEl.textContent = "アプリケーションの初期化に失敗しました";
             return;
         } else if (type === "wasm_progress") {
-            document.getElementById("loading").textContent = "データベースのエンジンを準備しています...";
+            loadingEl.textContent = "データベースのコントローラーを準備しています...";
         } else if (type === "download_progress") {
-            document.getElementById("loading").textContent = `データベースをダウンロードしています...（${result}%）`;
+            loadingEl.textContent = `データベースをダウンロードしています...（${result}%）`;
         } else if (type === "ready") {
             console.log("OPFSからデータを読み込んでいます...");
             postMessageWithFlag({ action: "init" });
@@ -370,7 +369,7 @@
             updateItems(MODE.SENTENCE_FAVORITE, sentencesFavorite.items);
             updateItems(MODE.GENERATE, generateSentences.items);
             setMode(MODE.SENTENCE_EXAMPLE);
-            document.getElementById("loading").style.display = "none";
+            loadingEl.style.display = "none";
             document.getElementById("app").style.visibility = "visible";
             console.log("OPFSからデータを読み込みました");
             isAppReady = true;

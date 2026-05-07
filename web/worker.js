@@ -148,7 +148,7 @@ self.onmessage = async (e) => {
 
 const initializeSQLite = async () => {
     postMessage({ type: "wasm_progress" });
-    console.log("データベースのエンジンを準備しています...");
+    console.log("WASMをコンパイルしています...");
     const sqlite3 = await sqlite3InitModule({
         print: console.log,
         printErr: console.error,

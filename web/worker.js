@@ -103,27 +103,30 @@ const start = async (sqlite3) => {
 
             const contentLength = +response.headers.get("Content-Length");
             const reader = response.body.getReader();
-
             const fileHandle = await root.getFileHandle(filename, { create: true });
             const accessHandle = await fileHandle.createSyncAccessHandle();
-            accessHandle.truncate(0);
 
-            let receivedLength = 0;
+            try {
+                accessHandle.truncate(0);
 
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                accessHandle.write(value);
-                receivedLength += value.length;
-                if (contentLength) {
-                    const percentage = Math.round((receivedLength / contentLength) * 100);
-                    postMessage({ type: "download_progress", result: percentage });
+                let receivedLength = 0;
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    accessHandle.write(value);
+                    receivedLength += value.length;
+                    if (contentLength) {
+                        const percentage = Math.round((receivedLength / contentLength) * 100);
+                        postMessage({ type: "download_progress", result: percentage });
+                    }
                 }
-            }
 
-            accessHandle.flush();
-            accessHandle.close();
-            console.log("OPFSにデータベースを読み込みました");
+                accessHandle.flush();
+                console.log("OPFSにデータベースを読み込みました");
+            } finally {
+                accessHandle.close();
+            }
         }
         const db = new sqlite3.oo1.OpfsDb("/" + filename);
         console.log("OPFSのデータベースに接続しました");

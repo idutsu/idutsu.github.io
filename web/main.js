@@ -354,9 +354,9 @@ let isAppReady = false;
 
 worker.onmessage = (e) => {
     isWorking = false;
-    const { type, result, error, errorType } = e.data;
+    const { type, result, errorMessage, errorType } = e.data;
     if (type === "error") {
-        console.error("Workerでエラーが発生しました：", error);
+        console.error("Workerでエラーが発生しました：", errorMessage);
         if (errorType === "INIT_FAILED") {
             document.getElementById("loading").textContent = "データベースの初期化に失敗しました";
         }

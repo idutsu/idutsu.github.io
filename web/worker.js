@@ -161,4 +161,3 @@ const initializeSQLite = async () => {
 };
 
 initializeSQLite();
-initializeSQLite();

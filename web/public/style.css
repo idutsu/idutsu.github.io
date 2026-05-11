@@ -184,7 +184,7 @@ footer a {
     opacity: 0.3;
 }
 
-#register {
+.rs {
     display: none;
     flex-direction: column;
     justify-content: center;
@@ -196,23 +196,26 @@ footer a {
     height: 100%;
     color: white;
     background-color: rgba(0, 0, 0, 0.8);
+    font-size: 1.5rem;
 }
 
-#register h2 {
-    margin-bottom: 20px;
+.rs h2 {
+    margin-bottom: 30px;
 }
-#register dl {
-    margin-top: 20px;
+.rs dl {
+    margin-top: 30px;
 }
 
-#register dt {
+.rs dt {
     border-color: white;
 }
 
-#register input[type="text"] {
-    width: 200px;
+.rs input[type="text"] {
+    width: 250px;
     color: black;
     background-color: white;
-    padding: 4px;
+    padding: 8px;
     margin: 0 4px;
+    height: 40px;
+    line-height: 40px;
 }

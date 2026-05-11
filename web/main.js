@@ -155,6 +155,16 @@
         };
     })();
 
+    const escapeHTML = (str) => {
+        if (!str) return "";
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    };
+
     const {
         showRegisterArea,
         hideRegisterArea,
@@ -192,16 +202,6 @@
             });
         });
 
-        const _escapeHTML = (str) => {
-            if (!str) return "";
-            return str
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#39;");
-        };
-
         const showRegisterArea = () => {
             registerArea.style.display = "flex";
             isShow = true;
@@ -232,11 +232,11 @@
         };
 
         const getInputNounValue = () => {
-            return _escapeHTML(inputNoun.value.trim());
+            return escapeHTML(inputNoun.value.trim());
         };
 
         const getInputVerbValue = () => {
-            return _escapeHTML(inputVerb.value.trim());
+            return escapeHTML(inputVerb.value.trim());
         };
 
         const exitRegisterArea = () => {
@@ -254,6 +254,86 @@
             getInputNounValue,
             getInputVerbValue,
             exitRegisterArea,
+        };
+    })();
+
+    const {
+        showSearchArea,
+        hideSearchArea,
+        isShowSearchArea,
+        isFocusSearchInput,
+        focusSearchInput,
+        getInputSearchValue,
+        exitSearchArea,
+    } = (() => {
+        const searchArea = document.getElementById("search");
+        const inputSearch = document.getElementById("inputSearch");
+        const hideIsInput = document.querySelectorAll(".hide-is-input");
+        const switchFocusCaption = document.getElementById("switchFocusCaption");
+
+        let isShow = false;
+        let isFocus = false;
+
+        inputSearch.addEventListener("focus", () => {
+            isFocus = true;
+            hideIsInput.forEach((el) => {
+                el.style.display = "none";
+            });
+        });
+
+        inputSearch.addEventListener("blur", () => {
+            isFocus = false;
+            hideIsInput.forEach((el) => {
+                el.style.display = "";
+            });
+        });
+
+        const showSearchArea = () => {
+            searchArea.style.display = "flex";
+            isShow = true;
+        };
+
+        const hideSearchArea = () => {
+            searchArea.style.display = "none";
+            isShow = false;
+        };
+
+        const isShowSearchArea = () => {
+            return isShow;
+        };
+
+        const isFocusSearchInput = () => {
+            return isFocus;
+        };
+
+        const focusSearchInput = () => {
+            if (!isShow) return;
+            if (document.activeElement === inputSearch) {
+                inputSearch.blur();
+                switchFocusCaption.textContent = "入力する";
+            } else {
+                inputSearch.focus();
+                switchFocusCaption.textContent = "入力をやめる";
+            }
+        };
+
+        const getInputSearchValue = () => {
+            return escapeHTML(inputSearch.value.trim());
+        };
+
+        const exitSearchArea = () => {
+            inputSearch.value = "";
+            hideSearchArea();
+        };
+
+        return {
+            showSearchArea,
+            hideSearchArea,
+            isShowSearchArea,
+            isFocusSearchInput,
+            focusSearchInput,
+            getInputSearchValue,
+            exitSearchArea,
         };
     })();
 
@@ -341,7 +421,7 @@
         }
         isWorking = true;
         payload = payload || {};
-        payload.limit = LIST_LENGTH_LIMIT;
+        payload.limit = payload.limit || LIST_LENGTH_LIMIT;
         worker.postMessage({ action, payload });
     };
 
@@ -414,6 +494,12 @@
                 e.preventDefault();
                 focusRegisterInput();
             }
+        } else if (isShowSearchArea()) {
+            if (e.key === "Enter") {
+                if (e.isComposing) return;
+                e.preventDefault();
+                focusSearchInput();
+            }
         } else {
             const cm = getMode();
             if (e.key === "s" || e.key === "w") {
@@ -458,11 +544,29 @@
                 }
                 exitRegisterArea();
             }
+        } else if (isShowSearchArea()) {
+            if (isFocusSearchInput()) return;
+            if (e.key === "q") {
+                e.preventDefault();
+                hideSearchArea();
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                const word = getInputSearchValue();
+                postMessageWithFlag({
+                    action: "getItems",
+                    payload: { type: MODE.SENTENCE_EXAMPLE, search: word, limit: 300 },
+                });
+                exitSearchArea();
+            }
         } else {
             const cm = getMode();
             if (e.key === "r") {
                 e.preventDefault();
                 showRegisterArea();
+            } else if (e.key === "q") {
+                console.log("q");
+                e.preventDefault();
+                showSearchArea();
             } else {
                 const { items, index } = STATE[cm];
                 if (e.key === " ") {

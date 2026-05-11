@@ -10,11 +10,19 @@ const dbExecute = {
             generateSentences: dbExecute.generateSentences(db, { limit }),
         };
     },
-    getItems: (db, { type, limit } = {}) => {
+    getItems: (db, { type, limit, search } = {}) => {
         let items;
         switch (type) {
             case "sentence_example":
-                items = db.selectArrays("SELECT noun, verb FROM wo ORDER BY RANDOM() LIMIT " + limit);
+                if (search) {
+                    const finalLimit = Math.min(limit || 300, 300);
+                    items = db.selectArrays(
+                        `SELECT noun, verb FROM wo WHERE noun LIKE ? OR verb LIKE ? ORDER BY count DESC LIMIT ${finalLimit}`,
+                        [`%${search}%`, `%${search}%`],
+                    );
+                } else {
+                    items = db.selectArrays("SELECT noun, verb FROM wo ORDER BY RANDOM() LIMIT " + limit);
+                }
                 break;
             case "noun_favorite":
                 items = db.selectArrays("SELECT word FROM noun ORDER BY ROWID DESC");

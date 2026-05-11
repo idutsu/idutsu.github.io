@@ -14,7 +14,9 @@
                 <div id="keys">
                     <dl id="sentence_example-key">
                         <dt>SPACE</dt>
-                        <dd>更新</dd>
+                        <dd>ランダムで例文を取得</dd>
+                        <dt>Q</dt>
+                        <dd>例文を検索</dd>
                         <dt>↑</dt>
                         <dd>名詞を保存</dd>
                         <dt>SHIFT + ↑</dt>
@@ -91,8 +93,8 @@
                     /></a>
                 </div>
             </footer>
-            <div id="register">
-                <h2>登録</h2>
+            <div id="register" class="rs">
+                <h2>登録する</h2>
                 <div>
                     <input type="text" id="inputNoun" placeholder="名詞" />
                     <span> を </span>
@@ -104,7 +106,21 @@
                     <dt class="hide-is-input">R</dt>
                     <dd class="hide-is-input">終了</dd>
                     <dt>Enter</dt>
-                    <dd>フォーカス切り替え</dd>
+                    <dd>入力を切り替える</dd>
+                </dl>
+            </div>
+            <div id="search" class="rs">
+                <h2>検索する</h2>
+                <div>
+                    <input type="text" id="inputSearch" placeholder="" />
+                </div>
+                <dl>
+                    <dt class="hide-is-input">↑</dt>
+                    <dd class="hide-is-input">検索</dd>
+                    <dt class="hide-is-input">Q</dt>
+                    <dd class="hide-is-input">終了</dd>
+                    <dt>Enter</dt>
+                    <dd id="switchFocusCaption">入力する</dd>
                 </dl>
             </div>
         </div>

@@ -564,9 +564,10 @@
                 e.preventDefault();
                 showRegisterArea();
             } else if (e.key === "q") {
-                console.log("q");
-                e.preventDefault();
-                showSearchArea();
+                if (isSentenceExampleMode()) {
+                    e.preventDefault();
+                    showSearchArea();
+                }
             } else {
                 const { items, index } = STATE[cm];
                 if (e.key === " ") {

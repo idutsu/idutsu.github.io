@@ -435,7 +435,7 @@
             if (errorType === "INIT_FAILED") loadingEl.textContent = "アプリケーションの初期化に失敗しました";
             return;
         } else if (type === "wasm_progress") {
-            loadingEl.textContent = "データベースのコントローラーを準備しています...";
+            loadingEl.textContent = "データベースの準備をしています...";
         } else if (type === "download_progress") {
             loadingEl.textContent = `データベースをダウンロードしています...（${result}%）`;
         } else if (type === "ready") {

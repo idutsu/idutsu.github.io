@@ -482,6 +482,8 @@
         } else if (type === "generateSentencesWithWord_result") {
             updateItems(MODE.GENERATE, result.items);
             if (result.items.length > 0) setMode(MODE.GENERATE);
+        } else if (type === "searchSentences_result") {
+            updateItems(MODE.SENTENCE_EXAMPLE, result.items);
         }
     };
 
@@ -552,10 +554,7 @@
             } else if (e.key === "ArrowUp") {
                 e.preventDefault();
                 const word = getInputSearchValue();
-                postMessageWithFlag({
-                    action: "getItems",
-                    payload: { type: MODE.SENTENCE_EXAMPLE, search: word, limit: 300 },
-                });
+                postMessageWithFlag({ action: "searchSentences", payload: { word } });
                 exitSearchArea();
             }
         } else {

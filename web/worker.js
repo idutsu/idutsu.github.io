@@ -14,15 +14,7 @@ const dbExecute = {
         let items;
         switch (type) {
             case "sentence_example":
-                if (search) {
-                    const finalLimit = Math.min(limit || 300, 300);
-                    items = db.selectArrays(
-                        `SELECT noun, verb FROM wo WHERE noun LIKE ? OR verb LIKE ? ORDER BY count DESC LIMIT ${finalLimit}`,
-                        [`%${search}%`, `%${search}%`],
-                    );
-                } else {
-                    items = db.selectArrays("SELECT noun, verb FROM wo ORDER BY RANDOM() LIMIT " + limit);
-                }
+                items = db.selectArrays("SELECT noun, verb FROM wo ORDER BY RANDOM() LIMIT " + limit);
                 break;
             case "noun_favorite":
                 items = db.selectArrays("SELECT word FROM noun ORDER BY ROWID DESC");
@@ -37,6 +29,13 @@ const dbExecute = {
                 throw new Error(`不正なテーブルです： ${type}`);
         }
         return { type, items };
+    },
+    searchSentences: (db, { word }) => {
+        const items = db.selectArrays(
+            `SELECT noun, verb FROM wo WHERE noun LIKE ? OR verb LIKE ? ORDER BY count DESC LIMIT 300`,
+            [`%${word}%`, `%${word}%`],
+        );
+        return { type: "searchSentences_result", items };
     },
     saveSentence: (db, { noun, verb }) => {
         db.exec("INSERT OR IGNORE INTO sentence (noun, verb) VALUES (?, ?)", {

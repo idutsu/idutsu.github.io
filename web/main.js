@@ -478,10 +478,11 @@
             });
         } else if (type === "generateSentences_result") {
             updateItems(MODE.GENERATE, result.items);
-            if (result.items.length > 0) setMode(MODE.GENERATE);
         } else if (type === "generateSentencesWithWord_result") {
             updateItems(MODE.GENERATE, result.items);
             if (result.items.length > 0) setMode(MODE.GENERATE);
+        } else if (type === "generateSentencesWithRandom_result") {
+            updateItems(MODE.GENERATE, result.items);
         } else if (type === "searchSentences_result") {
             updateItems(MODE.SENTENCE_EXAMPLE, result.items);
         }
@@ -576,7 +577,11 @@
                     } else if (isSentenceExampleMode(cm)) {
                         postMessageWithFlag({ action: "getItems", payload: { type: cm } });
                     } else if (isGenerateMode(cm)) {
-                        postMessageWithFlag({ action: "generateSentences" });
+                        if (e.shiftKey) {
+                            postMessageWithFlag({ action: "generateSentencesWithRandom" });
+                        } else {
+                            postMessageWithFlag({ action: "generateSentences" });
+                        }
                     }
                 } else if (e.key === "ArrowUp") {
                     e.preventDefault();

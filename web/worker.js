@@ -67,6 +67,13 @@ const dbExecute = {
         );
         return { items };
     },
+    generateSentencesWithRandom: (db, { limit } = {}) => {
+        const nouns = db.selectArrays("SELECT noun FROM wo ORDER BY RANDOM() LIMIT " + limit);
+        const verbs = db.selectArrays("SELECT verb FROM wo ORDER BY RANDOM() LIMIT " + limit);
+        const items = nouns.map((n, i) => [n[0], verbs[i % verbs.length][0]]);
+        return { items };
+    },
+
     generateSentencesWithWord: (db, { fixedTable, targetTable, fixedWord } = {}) => {
         const isFixedNoun = fixedTable === "noun";
         const rotateColumn = "word";

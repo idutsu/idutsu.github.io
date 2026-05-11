@@ -15,6 +15,7 @@ const dbExecute = {
         switch (type) {
             case "sentence_example":
                 items = db.selectArrays("SELECT noun, verb FROM wo ORDER BY RANDOM() LIMIT " + limit);
+                break;
             case "noun_favorite":
                 items = db.selectArrays("SELECT word FROM noun ORDER BY ROWID DESC");
                 break;

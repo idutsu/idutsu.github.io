@@ -21,6 +21,7 @@
     box-sizing: border-box;
     list-style-type: none;
     font-size: inherit;
+    font-weight: inherit;
     line-height: 1;
 }
 
@@ -197,6 +198,9 @@ footer a {
     background-color: rgba(0, 0, 0, 0.8);
 }
 
+#register h2 {
+    margin-bottom: 20px;
+}
 #register dl {
     margin-top: 20px;
 }

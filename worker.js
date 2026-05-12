@@ -14,7 +14,12 @@ const dbExecute = {
         let items;
         switch (type) {
             case "sentence_example":
-                items = db.selectArrays("SELECT noun, verb FROM wo ORDER BY RANDOM() LIMIT " + limit);
+                const maxId = db.selectValue("SELECT MAX(id) FROM wo");
+                const randomIds = [];
+                for (let i = 0; i < limit; i++) {
+                    randomIds.push(Math.floor(Math.random() * maxId) + 1);
+                }
+                items = db.selectArrays(`SELECT noun, verb FROM wo WHERE id IN (${randomIds.join(",")})`);
                 break;
             case "noun_favorite":
                 items = db.selectArrays("SELECT word FROM noun ORDER BY ROWID DESC");
@@ -62,15 +67,30 @@ const dbExecute = {
         return { type: `${type}_favorite`, word };
     },
     generateSentences: (db, { limit } = {}) => {
-        const items = db.selectArrays(
-            "SELECT n.word, v.word FROM noun n CROSS JOIN verb v ORDER BY RANDOM() LIMIT " + limit,
-        );
+        const nouns = db.selectArrays("SELECT word FROM noun ORDER BY RANDOM() LIMIT " + limit);
+        const verbs = db.selectArrays("SELECT word FROM verb ORDER BY RANDOM() LIMIT " + limit);
+        const items = [];
+        const count = Math.min(nouns.length, verbs.length);
+        for (let i = 0; i < count; i++) {
+            items.push([nouns[i][0], verbs[i][0]]);
+        }
         return { items };
     },
     generateSentencesWithRandom: (db, { limit } = {}) => {
-        const nouns = db.selectArrays("SELECT noun FROM wo ORDER BY RANDOM() LIMIT " + limit);
-        const verbs = db.selectArrays("SELECT verb FROM wo ORDER BY RANDOM() LIMIT " + limit);
-        const items = nouns.map((n, i) => [n[0], verbs[i % verbs.length][0]]);
+        const maxId = db.selectValue("SELECT MAX(id) FROM wo");
+        const nounIds = [];
+        const verbIds = [];
+        for (let i = 0; i < limit; i++) {
+            nounIds.push(Math.floor(Math.random() * maxId) + 1);
+            verbIds.push(Math.floor(Math.random() * maxId) + 1);
+        }
+        const nouns = db.selectArrays(`SELECT noun FROM wo WHERE id IN (${nounIds.join(",")})`);
+        const verbs = db.selectArrays(`SELECT verb FROM wo WHERE id IN (${verbIds.join(",")})`);
+        const items = [];
+        const count = Math.min(nouns.length, verbs.length);
+        for (let i = 0; i < count; i++) {
+            items.push([nouns[i][0], verbs[i][0]]);
+        }
         return { items };
     },
 

@@ -103,6 +103,9 @@ const start = async (sqlite3) => {
             }
         }
         if (needsDownload) {
+            try {
+                await root.removeEntry(filename);
+            } catch (e) {}
             console.log("OPFSにデータベースは存在しませんでした");
             console.log("データベースをダウンロードします...");
             const DB_URL = "https://pub-d666494efb334b1cab0884f65861efc4.r2.dev/wo.db";

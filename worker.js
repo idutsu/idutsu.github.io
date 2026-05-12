@@ -93,7 +93,6 @@ const dbExecute = {
         }
         return { items };
     },
-
     generateSentencesWithWord: (db, { fixedTable, targetTable, fixedWord } = {}) => {
         const isFixedNoun = fixedTable === "noun";
         const rotateColumn = "word";

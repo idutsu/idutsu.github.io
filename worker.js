@@ -92,20 +92,10 @@ const start = async (sqlite3) => {
     const filename = "wo.db";
     try {
         const root = await navigator.storage.getDirectory();
-        let needsDownload = true;
         console.log("OPFSのデータベースを確認します...");
         const fileHandle = await root.getFileHandle(filename).catch(() => null);
-        if (fileHandle) {
-            const file = await fileHandle.getFile();
-            if (file.size > 0) {
-                console.log("OPFSにデータベースが存在しました");
-                needsDownload = false;
-            }
-        }
-        if (needsDownload) {
-            try {
-                await root.removeEntry(filename);
-            } catch (e) {}
+        if (!fileHandle) {
+            await root.removeEntry(filename).catch(() => null);
             console.log("OPFSにデータベースは存在しませんでした");
             console.log("データベースをダウンロードします...");
             const DB_URL = "https://pub-d666494efb334b1cab0884f65861efc4.r2.dev/wo.db";

@@ -202,58 +202,42 @@
             });
         });
 
-        const showRegisterArea = () => {
-            registerArea.style.display = "flex";
-            isShow = true;
-        };
-
-        const hideRegisterArea = () => {
-            registerArea.style.display = "none";
-            isShow = false;
-        };
-
-        const isShowRegisterArea = () => {
-            return isShow;
-        };
-
-        const isFocusRegisterInput = () => {
-            return isFocus;
-        };
-
-        const focusRegisterInput = () => {
-            if (!isShow) return;
-            const currentIndex = inputs.indexOf(document.activeElement);
-            if (currentIndex === inputs.length - 1) {
-                document.activeElement.blur();
-                return;
-            }
-            const nextIndex = currentIndex + 1;
-            inputs[nextIndex].focus();
-        };
-
-        const getInputNounValue = () => {
-            return escapeHTML(inputNoun.value.trim());
-        };
-
-        const getInputVerbValue = () => {
-            return escapeHTML(inputVerb.value.trim());
-        };
-
-        const exitRegisterArea = () => {
-            inputNoun.value = "";
-            inputVerb.value = "";
-            hideRegisterArea();
-        };
-
         return {
-            showRegisterArea,
-            hideRegisterArea,
-            isShowRegisterArea,
-            isFocusRegisterInput,
-            focusRegisterInput,
-            getInputNounValue,
-            getInputVerbValue,
-            exitRegisterArea,
+            showRegisterArea: () => {
+                registerArea.style.display = "flex";
+                isShow = true;
+            },
+            hideRegisterArea: () => {
+                registerArea.style.display = "none";
+                isShow = false;
+            },
+            isShowRegisterArea: () => {
+                return isShow;
+            },
+            isFocusRegisterInput: () => {
+                return isFocus;
+            },
+            focusRegisterInput: () => {
+                if (!isShow) return;
+                const currentIndex = inputs.indexOf(document.activeElement);
+                if (currentIndex === inputs.length - 1) {
+                    document.activeElement.blur();
+                    return;
+                }
+                const nextIndex = currentIndex + 1;
+                inputs[nextIndex].focus();
+            },
+            getInputNounValue: () => {
+                return escapeHTML(inputNoun.value.trim());
+            },
+            getInputVerbValue: () => {
+                return escapeHTML(inputVerb.value.trim());
+            },
+            exitRegisterArea: () => {
+                inputNoun.value = "";
+                inputVerb.value = "";
+                hideRegisterArea();
+            },
         };
     })();
 
@@ -288,52 +272,38 @@
             });
         });
 
-        const showSearchArea = () => {
-            searchArea.style.display = "flex";
-            isShow = true;
-        };
-
-        const hideSearchArea = () => {
-            searchArea.style.display = "none";
-            isShow = false;
-        };
-
-        const isShowSearchArea = () => {
-            return isShow;
-        };
-
-        const isFocusSearchInput = () => {
-            return isFocus;
-        };
-
-        const focusSearchInput = () => {
-            if (!isShow) return;
-            if (document.activeElement === inputSearch) {
-                inputSearch.blur();
-                switchFocusCaption.textContent = "入力する";
-            } else {
-                inputSearch.focus();
-                switchFocusCaption.textContent = "入力をやめる";
-            }
-        };
-
-        const getInputSearchValue = () => {
-            return escapeHTML(inputSearch.value.trim());
-        };
-
-        const exitSearchArea = () => {
-            inputSearch.value = "";
-            hideSearchArea();
-        };
-
         return {
-            showSearchArea,
-            hideSearchArea,
-            isShowSearchArea,
-            isFocusSearchInput,
-            focusSearchInput,
-            getInputSearchValue,
-            exitSearchArea,
+            showSearchArea: () => {
+                searchArea.style.display = "flex";
+                isShow = true;
+            },
+            hideSearchArea: () => {
+                searchArea.style.display = "none";
+                isShow = false;
+            },
+            isShowSearchArea: () => {
+                return isShow;
+            },
+            isFocusSearchInput: () => {
+                return isFocus;
+            },
+            focusSearchInput: () => {
+                if (!isShow) return;
+                if (document.activeElement === inputSearch) {
+                    inputSearch.blur();
+                    switchFocusCaption.textContent = "入力する";
+                } else {
+                    inputSearch.focus();
+                    switchFocusCaption.textContent = "入力をやめる";
+                }
+            },
+            getInputSearchValue: () => {
+                return escapeHTML(inputSearch.value.trim());
+            },
+            exitSearchArea: () => {
+                inputSearch.value = "";
+                hideSearchArea();
+            },
         };
     })();
 

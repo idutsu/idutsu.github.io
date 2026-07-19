@@ -14,9 +14,9 @@
 <body>
   <header>
     {% if current_path is defined and current_path == "/" %}
-    <h1>{{ config.title }}</h1>
+    <h1><a href="{{ config.base_url }}">{{ config.title }}</a></h1>
     {% else %}
-    <p>{{ config.title }}</p>
+    <p><a href="{{ config.base_url }}">{{ config.title }}</a></p>
     {% endif %}
     <nav>
       <a href="{{ config.base_url }}">HOME</a>

@@ -4,11 +4,6 @@
 
 {% block content %}
 <article>
-  {% if page.date %}
-    {% set now_ts = now(timestamp=true) %}
-    {% set page_ts = page.date | date(format="%s") | int %}
-    {% if now_ts - page_ts < 259200 %}<time datetime="{{ page.date }}">{{ page.date | date(format="%Y.%m.%d") }}</time>{% endif %}
-  {% endif %}
   <h1>{{ page.title }}</h1>
   {{ page.content | safe }}
 </article>

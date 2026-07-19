@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&display=block">
   <link rel="stylesheet" href="{{ get_url(path='style.css') }}">
+  <style>html.wf-loading body { visibility: hidden; }</style>
+  <script>document.documentElement.classList.add('wf-loading');</script>
 </head>
 <body>
   <header>
@@ -25,5 +27,14 @@
   <main>
     {% block content %}{% endblock content %}
   </main>
+  <script>
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () {
+        document.documentElement.classList.remove('wf-loading');
+      });
+    } else {
+      document.documentElement.classList.remove('wf-loading');
+    }
+  </script>
 </body>
 </html>

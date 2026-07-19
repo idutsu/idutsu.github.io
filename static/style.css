@@ -1,0 +1,95 @@
+@font-face {
+  font-family: "Noto Sans JP";
+  src: url("/fonts/NotoSansJP-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans JP";
+  src: url("/fonts/NotoSansJP-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DotGothic16";
+  src: url("/fonts/DotGothic16-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: block;
+}
+
+:root {
+    --background: #dbe59c;
+    --selected: #62834b;
+    --text: #112c18;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    list-style-type: none;
+    font-size: inherit;
+    font-weight: inherit;
+    color:inherit;
+    line-height:1.5;
+    overflow: hidden;
+}
+
+html {
+    height: 100%;
+    font-size: 19px;
+}
+
+body {
+    width: 700px;
+    margin: 0 auto;
+    padding:10px;
+    font-family: "DotGothic16", sans-serif;
+    font-size: 1rem;
+    color: var(--text);
+    background-color: var(--background);
+}
+
+nav {
+    color:var(--selected);
+}
+
+
+header {
+    display: flex;
+    gap: 10px;
+    margin-bottom:20px;
+}
+
+h1 {
+    font-size:1.2rem;
+}
+
+header h1, header p {
+    font-size:1.2rem;
+    color:var(--selected);
+    margin-right:auto;
+}
+
+li{
+    color:var(--text);
+}
+
+article * {
+    line-height:1.5;
+}
+
+article h1 {
+    margin-bottom:15px;
+}
+
+article time {
+    font-size:0.9rem;
+}
+
+.new {
+    color: var(--selected);
+    font-size: 0.8rem;
+}

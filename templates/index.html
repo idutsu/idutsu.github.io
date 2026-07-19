@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% set posts = get_section(path="posts/_index.md") %}
+{% set now_ts = now(timestamp=true) %}
+<ul>
+  {% for page in posts.pages %}
+  <li>
+    <a href="{{ page.permalink }}">{{ page.title }}</a>
+    {% if page.date %}
+      {% set page_ts = page.date | date(format="%s") | int %}
+      {% if now_ts - page_ts < 259200 %}<span class="new">NEW</span>{% endif %}
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% endblock content %}

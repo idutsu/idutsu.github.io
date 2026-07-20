@@ -1,10 +1,16 @@
 {% extends "base.html" %}
-
 {% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
-
 {% block content %}
+{% set cat_label = "" %}
+{% if page.taxonomies.categories is defined %}
+  {% set cat = page.taxonomies.categories | first %}
+  {% set cat_name = config.extra.category_names[cat] | default(value=cat) %}
+  {% set cat_label = "（" ~ cat_name ~ "）" %}
+{% endif %}
 <article>
-  <h1>{{ page.title }}</h1>
-  {{ page.content | safe }}
+  <header>
+    <h1 class="title">{{ page.title }}{{ cat_label }}</h1>
+  </header>
+  <div class="content">{{ page.content | safe }}</div>
 </article>
 {% endblock content %}

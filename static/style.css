@@ -1,19 +1,5 @@
-@font-face {
-  font-family: "Noto Sans JP";
-  src: url("/fonts/NotoSansJP-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Noto Sans JP";
-  src: url("/fonts/NotoSansJP-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-display: swap;
-}
-
 :root {
-    --background: #dbe59c;
+    --bg: #dbe59c;
     --link: #62834b;
     --text: #112c18;
 }
@@ -41,7 +27,7 @@ body {
     font-family: "DotGothic16", sans-serif;
     font-size: 1rem;
     color: var(--link);
-    background-color: var(--background);
+    background-color: var(--bg);
 }
 
 header {
@@ -50,44 +36,46 @@ header {
     margin-bottom:20px;
 }
 
+article header {
+    margin-bottom:15px;
+}
+
 a {
-    text-decoration: none;
-}
-
-h1 {
-    font-size:1.2rem;
-}
-
-nav a {
     text-decoration: underline;
 }
 
-header h1, header p {
+.title{
     font-size:1.2rem;
     margin-right:auto;
 }
 
+.title a {
+    text-decoration: none;
+}
+
+h2 {
+    color: var(--text);
+    margin-bottom: 10px;
+}
+
 ul {
-    list-style: none;
+    list-style-type: none;
+    margin-bottom:1rem;
 }
 
 li::before {
     content: "・";
 }
 
-li a {
-    text-decoration: underline;
+li.more {
+    font-size: 0.9rem;
+    text-align: right;
 }
 
-article {
+li.more::before {
+    content: "";
+}
+
+.content p {
     color: var(--text);
-}
-
-article * {
-    line-height:1.5;
-}
-
-article h1 {
-    color: var(--link);
-    margin-bottom:15px;
 }

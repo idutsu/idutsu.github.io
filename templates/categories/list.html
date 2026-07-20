@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}カテゴリー | {{ config.title }}{% endblock title %}
+{% block content %}
+<h2>カテゴリー</h2>
+<ul>
+  {% for term in terms %}
+  <li>
+    <a href="{{ term.permalink }}">{{ config.extra.category_names[term.name] | default(value=term.name) }}</a>（{{ term.pages | length }}）
+  </li>
+  {% endfor %}
+</ul>
+{% endblock content %}

@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=700">
+  <meta name=”description” content=”井筒大輔（放送作家）の公式ウェブサイト” />
   <title>{% block title %}{{ config.title }}{% endblock title %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,10 +14,10 @@
 </head>
 <body>
   <header>
-    {% if current_path is defined and current_path == "/" %}
-    <h1><a href="{{ config.base_url }}">{{ config.title }}</a></h1>
+    {% if current_path is defined and (current_path == "/" or current_path is starting_with("/categories/")) %}
+    <h1 class="title"><a href="{{ config.base_url }}">{{ config.title }}</a></h1>
     {% else %}
-    <p><a href="{{ config.base_url }}">{{ config.title }}</a></p>
+    <p class="title"><a href="{{ config.base_url }}">{{ config.title }}</a></p>
     {% endif %}
     <nav>
       <a href="{{ config.base_url }}">HOME</a>

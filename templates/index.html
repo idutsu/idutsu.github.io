@@ -1,12 +1,32 @@
 {% extends "base.html" %}
-
 {% block content %}
-{% set posts = get_section(path="posts/_index.md") %}
+{% set categories = get_taxonomy(kind="categories") %}
+{% set order = config.extra.category_order | default(value=[]) %}
+
+{# category_order の順にタームを並べ、載っていないタームは最後に足す #}
+{% set_global ordered_terms = [] %}
+{% for name in order %}
+  {% for term in categories.items %}
+    {% if term.name == name %}
+      {% set_global ordered_terms = ordered_terms | concat(with=term) %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+{% for term in categories.items %}
+  {% if term.name not in order %}
+    {% set_global ordered_terms = ordered_terms | concat(with=term) %}
+  {% endif %}
+{% endfor %}
+
+{% for term in ordered_terms %}
+<h2>{{ config.extra.category_names[term.name] | default(value=term.name) }}</h2>
 <ul>
-  {% for page in posts.pages %}
+  {% for page in term.pages | slice(end=10) %}
   <li>
     <a href="{{ page.permalink }}">{{ page.title }}</a>
   </li>
   {% endfor %}
+  <li class="more"><a href="{{ term.permalink }}">>もっと見る</a></li>
 </ul>
+{% endfor %}
 {% endblock content %}
